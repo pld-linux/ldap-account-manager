@@ -11,7 +11,8 @@ Source1:	%{name}.httpd
 URL:		http://lam.sourceforge.net/
 Requires:	apache
 Requires:	php-ldap
-Requires:	php-mcrypt
+# fuck mcrypt works without this, locking page
+#Requires:	php-mcrypt
 Requires:	php-gettext
 Requires:	php-pcre
 BuildArch:	noarch
