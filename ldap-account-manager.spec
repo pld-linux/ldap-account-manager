@@ -1,5 +1,6 @@
 %define		_name	lam
-Summary:	LDAP Account Manager (LAM) is a webfrontend for managing accounts stored in an openLDAP server
+Summary:	LDAP Account Manager (LAM) - a webfrontend for managing accounts stored in an LDAP server
+Summary(pl):	LDAP Account Manager (LAM) - interfejs WWW do zarz±dzania kontami na serwerze LDAP
 Name:		ldap-account-manager
 Version:	0.4.9
 Release:	0.1
@@ -22,10 +23,11 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %define		_confdir	%{_sysconfdir}/%{name}
 
 %description
-LDAP Account Manager (LAM) is a webfrontend for managing accounts stored in an openLDAP server.
-Features:
+LDAP Account Manager (LAM) is a webfrontend for managing accounts
+stored in an LDAP server. Features:
 - management of Unix user and group accounts (posixAccount/posixGroup)
-- management of Samba 2.x/3 user and host accounts (sambaAccount/sambaSamAccount)
+- management of Samba 2.x/3 user and host accounts
+  (sambaAccount/sambaSamAccount)
 - profiles for account creation
 - editor for organizational units (OU)
 - account creation via file upload
@@ -40,7 +42,24 @@ Features:
 
 
 %description -l pl
--
+LDAP Account Manager (LAM) to interfejs WWW do zarz±dzania kontami
+przechowywanymi na serwerze LDAP. Mo¿liwo¶ci:
+- zarz±dzanie kontami uniksowych u¿ytkowników i grup
+  (posixAccount/posixGroup)
+- zarz±dzanie kontami u¿ytkowników i hostów Samby 2.x/3
+  (sambaAccount/sambaSamAccount)
+- tworzenie profili dla kont
+- edytor jednostej organizacyjnych (OU)
+- tworzenie kont poprzez upload plików
+- automatyczne tworzenie/usuwanie katalogów domowych
+- ustawianie quot
+- obs³uga LDAP+SSL
+- obs³uga wielu jêzyków (angielski, francuski, niemiecki, wêgierski,
+  japoñski)
+- wiele plików konfiguracyjnych
+- wyj¶cie PDF dla kont u¿ytkowników/grup/hostów
+- dodatkowy tekst dla PDF-ów u¿ytkownika
+- obs³uga wielu skrótów hase³
 
 %prep
 %setup -q
@@ -100,9 +119,10 @@ fi
 %files
 %defattr(644,root,root,755)
 %doc docs/*
-%config(noreplace) %verify(not size mtime md5) /etc/httpd/%{name}.conf
-%config(noreplace) %verify(not size mtime md5) %{_appdir}/config/*.cfg
-%config(noreplace) %verify(not size mtime md5) %{_appdir}/config/*.conf
+%config(noreplace) %verify(not md5 mtime size) /etc/httpd/%{name}.conf
+%config(noreplace) %verify(not md5 mtime size) %{_appdir}/config/*.cfg
+%config(noreplace) %verify(not md5 mtime size) %{_appdir}/config/*.conf
 %attr(740,http,http) %{_appdir}/sess
 %attr(740,http,http) %{_appdir}/tmp
+# XXX: dup
 %{_appdir}
