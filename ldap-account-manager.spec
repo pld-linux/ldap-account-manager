@@ -8,7 +8,7 @@ Group:		Applications/Networking
 Source0:	http://dl.sourceforge.net/lam/%{name}_%{version}.tar.gz
 Source1:	%{name}.httpd
 # Source0-md5:	6478d91210dbf13c9d49b7aa1a971be1
-URL:		http://phpldapadmin.sourceforge.net/
+URL:		http://lam.sourceforge.net/
 Requires:	apache
 Requires:	php-ldap
 Requires:	php-mcrypt
