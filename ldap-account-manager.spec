@@ -50,25 +50,24 @@ rm -rf $RPM_BUILD_ROOT
 
 install -d \
 	$RPM_BUILD_ROOT{%{_confdir},%{_sysconfdir}/httpd} \
-	$RPM_BUILD_ROOT%{_appdir}/{config,doc,graphics,sess,style,tmp,templates,lib,locale}
+	$RPM_BUILD_ROOT%{_appdir}/{config,doc,graphics,help,sess,style,tmp,templates,lib,locale}
 
 install %{SOURCE1} $RPM_BUILD_ROOT/etc/httpd/%{name}.conf
 
 install	index.html			$RPM_BUILD_ROOT%{_appdir}
+cp -a	config/*			$RPM_BUILD_ROOT%{_appdir}/config
 install	config/config.cfg_sample	$RPM_BUILD_ROOT%{_appdir}/config/config.cfg
 install	config/lam.conf_sample		$RPM_BUILD_ROOT%{_appdir}/config/lam.conf
-install	templates/*.php			$RPM_BUILD_ROOT%{_appdir}/templates
+install	graphics/*.{png,jpg}		$RPM_BUILD_ROOT%{_appdir}/graphics
+install	help/*.inc			$RPM_BUILD_ROOT%{_appdir}/help
 install	lib/*.{inc,php}			$RPM_BUILD_ROOT%{_appdir}/lib
 install	sess/.htaccess			$RPM_BUILD_ROOT%{_appdir}/sess
-install	tmp/.htaccess			$RPM_BUILD_ROOT%{_appdir}/tmp
 install	style/*css			$RPM_BUILD_ROOT%{_appdir}/style
-install	graphics/*.{png,jpg}		$RPM_BUILD_ROOT%{_appdir}/graphics
+cp -a	templates/*			$RPM_BUILD_ROOT%{_appdir}/templates
+install	tmp/.htaccess			$RPM_BUILD_ROOT%{_appdir}/tmp
 cp -a	locale/*			$RPM_BUILD_ROOT%{_appdir}/locale
 
-#ln -sf	%{_confdir}/config.php 	$RPM_BUILD_ROOT%{_appdir}/config.php
-
-#mv -f	$RPM_BUILD_ROOT%{_appdir}/config.php.example $RPM_BUILD_ROOT%{_appdir}/config.php
-#rm -f	$RPM_BUILD_ROOT%{_appdir}/config.php.example
+rm -f 	$RPM_BUILD_ROOT%{_appdir}/config/*.sample
 
 %clean
 rm -rf $RPM_BUILD_ROOT
