@@ -1,21 +1,23 @@
+# TODO
+# - webapps
 %define		_name	lam
 Summary:	LDAP Account Manager (LAM) - a webfrontend for managing accounts stored in an LDAP server
 Summary(pl):	LDAP Account Manager (LAM) - interfejs WWW do zarz±dzania kontami na serwerze LDAP
 Name:		ldap-account-manager
 Version:	0.4.9
-Release:	0.1
+Release:	0.3
 License:	GPL v2
 Group:		Applications/Networking
 Source0:	http://dl.sourceforge.net/lam/%{name}_%{version}.tar.gz
 Source1:	%{name}.httpd
 # Source0-md5:	6478d91210dbf13c9d49b7aa1a971be1
 URL:		http://lam.sourceforge.net/
+Requires:	php(gettext)
+Requires:	php(ldap)
+Requires:	php(pcre)
 Requires:	webserver = apache
-Requires:	php-ldap
 # fuck mcrypt works without this, locking page
 #Requires:	php-mcrypt
-Requires:	php-gettext
-Requires:	php-pcre
 BuildArch:	noarch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -34,7 +36,8 @@ stored in an LDAP server. Features:
 - automatic creation/deletion of home directories
 - setting quotas
 - support for LDAP+SSL
-- multi-language support (English, French, German, Hungarian, Japanese)
+- multi-language support (English, French, German, Hungarian,
+  Japanese)
 - multiple configuration files
 - PDF output for user/group/host accounts
 - additional text for user PDFs
