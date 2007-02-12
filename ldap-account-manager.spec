@@ -2,7 +2,7 @@
 # - webapps
 %define		_name	lam
 Summary:	LDAP Account Manager (LAM) - a webfrontend for managing accounts stored in an LDAP server
-Summary(pl):	LDAP Account Manager (LAM) - interfejs WWW do zarz±dzania kontami na serwerze LDAP
+Summary(pl.UTF-8):   LDAP Account Manager (LAM) - interfejs WWW do zarzƒÖdzania kontami na serwerze LDAP
 Name:		ldap-account-manager
 Version:	0.4.9
 Release:	0.3
@@ -44,25 +44,25 @@ stored in an LDAP server. Features:
 - supports multiple password hashes
 
 
-%description -l pl
-LDAP Account Manager (LAM) to interfejs WWW do zarz±dzania kontami
-przechowywanymi na serwerze LDAP. Moøliwo∂ci:
-- zarz±dzanie kontami uniksowych uøytkownikÛw i grup
+%description -l pl.UTF-8
+LDAP Account Manager (LAM) to interfejs WWW do zarzƒÖdzania kontami
+przechowywanymi na serwerze LDAP. Mo≈ºliwo≈õci:
+- zarzƒÖdzanie kontami uniksowych u≈ºytkownik√≥w i grup
   (posixAccount/posixGroup)
-- zarz±dzanie kontami uøytkownikÛw i hostÛw Samby 2.x/3
+- zarzƒÖdzanie kontami u≈ºytkownik√≥w i host√≥w Samby 2.x/3
   (sambaAccount/sambaSamAccount)
 - tworzenie profili dla kont
 - edytor jednostej organizacyjnych (OU)
-- tworzenie kont poprzez upload plikÛw
-- automatyczne tworzenie/usuwanie katalogÛw domowych
+- tworzenie kont poprzez upload plik√≥w
+- automatyczne tworzenie/usuwanie katalog√≥w domowych
 - ustawianie quot
-- obs≥uga LDAP+SSL
-- obs≥uga wielu jÍzykÛw (angielski, francuski, niemiecki, wÍgierski,
-  japoÒski)
-- wiele plikÛw konfiguracyjnych
-- wyj∂cie PDF dla kont uøytkownikÛw/grup/hostÛw
-- dodatkowy tekst dla PDF-Ûw uøytkownika
-- obs≥uga wielu skrÛtÛw hase≥
+- obs≈Çuga LDAP+SSL
+- obs≈Çuga wielu jƒôzyk√≥w (angielski, francuski, niemiecki, wƒôgierski,
+  japo≈Ñski)
+- wiele plik√≥w konfiguracyjnych
+- wyj≈õcie PDF dla kont u≈ºytkownik√≥w/grup/host√≥w
+- dodatkowy tekst dla PDF-√≥w u≈ºytkownika
+- obs≈Çuga wielu skr√≥t√≥w hase≈Ç
 
 %prep
 %setup -q
