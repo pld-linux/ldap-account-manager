@@ -2,7 +2,7 @@
 # - webapps
 %define		_name	lam
 Summary:	LDAP Account Manager (LAM) - a webfrontend for managing accounts stored in an LDAP server
-Summary(pl.UTF-8):   LDAP Account Manager (LAM) - interfejs WWW do zarządzania kontami na serwerze LDAP
+Summary(pl.UTF-8):	LDAP Account Manager (LAM) - interfejs WWW do zarządzania kontami na serwerze LDAP
 Name:		ldap-account-manager
 Version:	0.4.9
 Release:	0.3
