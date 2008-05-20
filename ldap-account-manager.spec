@@ -19,8 +19,8 @@ Requires(triggerpostun):	sed >= 4.0
 %endif
 Requires:	php(gettext)
 Requires:	php(ldap)
-Requires:	php(pcre)
 Requires:	php(mhash)
+Requires:	php(pcre)
 Requires:	webserver = apache
 BuildArch:	noarch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -93,22 +93,22 @@ rm -rf $RPM_BUILD_ROOT
 
 install -d \
 	$RPM_BUILD_ROOT{%{_sysconfdir},%{_appdir}} \
-	$RPM_BUILD_ROOT%{_appdir}/{config,doc,graphics,help,sess,style,tmp,templates,lib,locale}
+	$RPM_BUILD_ROOT%{_appdir}/{config,graphics,help,sess,style,tmp,templates,lib,locale}
 
 install	index.html			$RPM_BUILD_ROOT%{_appdir}
 cp -a	config/*			$RPM_BUILD_ROOT%{_appdir}/config
 install	config/config.cfg_sample	$RPM_BUILD_ROOT%{_sysconfdir}/config.cfg
 install	config/lam.conf_sample		$RPM_BUILD_ROOT%{_sysconfdir}/lam.conf
 install	graphics/*.{png,jpg}		$RPM_BUILD_ROOT%{_appdir}/graphics
-cp -a	help				$RPM_BUILD_ROOT%{_appdir}/help
-cp -a	lib				$RPM_BUILD_ROOT%{_appdir}/lib
+install	help/help.inc			$RPM_BUILD_ROOT%{_appdir}/help
+cp -a	lib/*				$RPM_BUILD_ROOT%{_appdir}/lib
 install	sess/.htaccess			$RPM_BUILD_ROOT%{_appdir}/sess
 install	style/*css			$RPM_BUILD_ROOT%{_appdir}/style
 cp -a	templates/*			$RPM_BUILD_ROOT%{_appdir}/templates
 install	tmp/.htaccess			$RPM_BUILD_ROOT%{_appdir}/tmp
 cp -a	locale/*			$RPM_BUILD_ROOT%{_appdir}/locale
 
-rm -f 	$RPM_BUILD_ROOT%{_appdir}/config/*.sample
+rm -f 	$RPM_BUILD_ROOT%{_appdir}/config/*_sample
 
 cp -a apache.conf $RPM_BUILD_ROOT%{_sysconfdir}/apache.conf
 cp -a apache.conf $RPM_BUILD_ROOT%{_sysconfdir}/httpd.conf
