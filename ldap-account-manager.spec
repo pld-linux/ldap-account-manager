@@ -9,7 +9,6 @@ License:	GPL v2
 Group:		Applications/Networking
 Source0:	http://dl.sourceforge.net/lam/%{name}-%{version}.tar.gz
 # Source0-md5:	ceb5c6b795be2f3030b695b7f105e6f2
-Source1:	%{name}.httpd
 URL:		http://lam.sourceforge.net/
 BuildRequires:	rpmbuild(macros) >= 1.268
 Requires:	webapps
