@@ -1,28 +1,35 @@
 # TODO
-# - webapps
+# - webapps (almost done)
 %define		_name	lam
 Summary:	LDAP Account Manager (LAM) - a webfrontend for managing accounts stored in an LDAP server
 Summary(pl.UTF-8):	LDAP Account Manager (LAM) - interfejs WWW do zarządzania kontami na serwerze LDAP
 Name:		ldap-account-manager
-Version:	0.4.9
-Release:	0.3
+Version:	2.3.0
+Release:	0.1
 License:	GPL v2
 Group:		Applications/Networking
-Source0:	http://dl.sourceforge.net/lam/%{name}_%{version}.tar.gz
-# Source0-md5:	6478d91210dbf13c9d49b7aa1a971be1
+Source0:	http://dl.sourceforge.net/lam/%{name}-%{version}.tar.gz
+# Source0-md5:	ceb5c6b795be2f3030b695b7f105e6f2
 Source1:	%{name}.httpd
 URL:		http://lam.sourceforge.net/
+BuildRequires:	rpmbuild(macros) >= 1.268
+Requires:	webapps
+%if %{with trigger}
+Requires(triggerpostun):	sed >= 4.0
+%endif
 Requires:	php(gettext)
 Requires:	php(ldap)
 Requires:	php(pcre)
+Requires:	php(mhash)
 Requires:	webserver = apache
-# fuck mcrypt works without this, locking page
-#Requires:	php-mcrypt
 BuildArch:	noarch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
-%define		_appdir		%{_datadir}/%{name}
-%define		_confdir	%{_sysconfdir}/%{name}
+%define		_webapps	/etc/webapps
+%define		_webapp		%{name}
+%define		_sysconfdir	%{_webapps}/%{_webapp}
+%define		_appdir		%{_datadir}/%{_webapp}
+
 
 %description
 LDAP Account Manager (LAM) is a webfrontend for managing accounts
@@ -67,22 +74,34 @@ przechowywanymi na serwerze LDAP. Możliwości:
 %prep
 %setup -q
 
+cat > apache.conf <<'EOF'
+Alias /%{name} %{_appdir}
+<Directory %{_appdir}>
+	Allow from all
+</Directory>
+EOF
+
+cat > lighttpd.conf <<'EOF'
+alias.url += (
+    "/%{name}" => "%{_appdir}",
+)
+EOF
+
+
 %install
 rm -rf $RPM_BUILD_ROOT
 
 install -d \
-	$RPM_BUILD_ROOT{%{_confdir},%{_sysconfdir}/httpd} \
+	$RPM_BUILD_ROOT{%{_sysconfdir},%{_appdir}} \
 	$RPM_BUILD_ROOT%{_appdir}/{config,doc,graphics,help,sess,style,tmp,templates,lib,locale}
-
-install %{SOURCE1} $RPM_BUILD_ROOT/etc/httpd/%{name}.conf
 
 install	index.html			$RPM_BUILD_ROOT%{_appdir}
 cp -a	config/*			$RPM_BUILD_ROOT%{_appdir}/config
-install	config/config.cfg_sample	$RPM_BUILD_ROOT%{_appdir}/config/config.cfg
-install	config/lam.conf_sample		$RPM_BUILD_ROOT%{_appdir}/config/lam.conf
+install	config/config.cfg_sample	$RPM_BUILD_ROOT%{_sysconfdir}/config.cfg
+install	config/lam.conf_sample		$RPM_BUILD_ROOT%{_sysconfdir}/lam.conf
 install	graphics/*.{png,jpg}		$RPM_BUILD_ROOT%{_appdir}/graphics
-install	help/*.inc			$RPM_BUILD_ROOT%{_appdir}/help
-install	lib/*.{inc,php}			$RPM_BUILD_ROOT%{_appdir}/lib
+cp -a	help				$RPM_BUILD_ROOT%{_appdir}/help
+cp -a	lib				$RPM_BUILD_ROOT%{_appdir}/lib
 install	sess/.htaccess			$RPM_BUILD_ROOT%{_appdir}/sess
 install	style/*css			$RPM_BUILD_ROOT%{_appdir}/style
 cp -a	templates/*			$RPM_BUILD_ROOT%{_appdir}/templates
@@ -91,41 +110,40 @@ cp -a	locale/*			$RPM_BUILD_ROOT%{_appdir}/locale
 
 rm -f 	$RPM_BUILD_ROOT%{_appdir}/config/*.sample
 
+cp -a apache.conf $RPM_BUILD_ROOT%{_sysconfdir}/apache.conf
+cp -a apache.conf $RPM_BUILD_ROOT%{_sysconfdir}/httpd.conf
+cp -a lighttpd.conf $RPM_BUILD_ROOT%{_sysconfdir}/lighttpd.conf
+
+%triggerin -- apache1 < 1.3.37-3, apache1-base
+%webapp_register apache %{_webapp}
+
+%triggerun -- apache1 < 1.3.37-3, apache1-base
+%webapp_unregister apache %{_webapp}
+
+%triggerin -- apache < 2.2.0, apache-base
+%webapp_register httpd %{_webapp}
+
+%triggerun -- apache < 2.2.0, apache-base
+%webapp_unregister httpd %{_webapp}
+
+%triggerin -- lighttpd
+%webapp_register lighttpd %{_webapp}
+
+%triggerun -- lighttpd
+%webapp_unregister lighttpd %{_webapp}
+
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%post
-if [ -f %{_sysconfdir}/httpd/httpd.conf ] && ! grep -q "^Include.*%{name}.conf" %{_sysconfdir}/httpd/httpd.conf; then
-	echo "Include %{_sysconfdir}/httpd/%{name}.conf" >> %{_sysconfdir}/httpd/httpd.conf
-elif [ -d %{_sysconfdir}/httpd/httpd.conf ]; then
-	 ln -sf %{_sysconfdir}/httpd/%{name}.conf %{_sysconfdir}/httpd/httpd.conf/99_%{name}.conf
-fi
-if [ -f /var/lock/subsys/httpd ]; then
-	%{_sbindir}/apachectl restart 1>&2
-fi
-
-%preun
-if [ "$1" = "0" ]; then
-	umask 027
-	if [ -d %{_sysconfdir}/httpd/httpd.conf ]; then
-		rm -f %{_sysconfdir}/httpd/httpd.conf/99_%{name}.conf
-	else
-		grep -v "^Include.*%{name}.conf" %{_sysconfdir}/httpd/httpd.conf > \
-			%{_sysconfdir}/httpd/httpd.conf.tmp
-		mv -f %{_sysconfdir}/httpd/httpd.conf.tmp %{_sysconfdir}/httpd/httpd.conf
-		if [ -f /var/lock/subsys/httpd ]; then
-			%{_sbindir}/apachectl restart 1>&2
-		fi
-	fi
-fi
 
 %files
 %defattr(644,root,root,755)
 %doc docs/*
-%config(noreplace) %verify(not md5 mtime size) /etc/httpd/%{name}.conf
-%config(noreplace) %verify(not md5 mtime size) %{_appdir}/config/*.cfg
-%config(noreplace) %verify(not md5 mtime size) %{_appdir}/config/*.conf
-%attr(740,http,http) %{_appdir}/sess
-%attr(740,http,http) %{_appdir}/tmp
-# XXX: dup
+%dir %attr(750,root,http) %{_sysconfdir}
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/apache.conf
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/httpd.conf
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/lighttpd.conf
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/config.cfg
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/lam.conf
 %{_appdir}
