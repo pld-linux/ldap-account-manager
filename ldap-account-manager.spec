@@ -75,7 +75,7 @@ przechowywanymi na serwerze LDAP. Możliwości:
 %setup -q
 
 cat > apache.conf <<'EOF'
-Alias /%{name} %{_appdir}
+Alias /%{_name} %{_appdir}
 <Directory %{_appdir}>
 	Allow from all
 </Directory>
@@ -83,7 +83,7 @@ EOF
 
 cat > lighttpd.conf <<'EOF'
 alias.url += (
-    "/%{name}" => "%{_appdir}",
+    "/%{_name}" => "%{_appdir}",
 )
 EOF
 
