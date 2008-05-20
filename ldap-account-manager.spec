@@ -1,5 +1,4 @@
-# TODO
-# - webapps (almost done)
+#
 %define		_name	lam
 Summary:	LDAP Account Manager (LAM) - a webfrontend for managing accounts stored in an LDAP server
 Summary(pl.UTF-8):	LDAP Account Manager (LAM) - interfejs WWW do zarządzania kontami na serwerze LDAP
@@ -114,6 +113,9 @@ cp -a apache.conf $RPM_BUILD_ROOT%{_sysconfdir}/apache.conf
 cp -a apache.conf $RPM_BUILD_ROOT%{_sysconfdir}/httpd.conf
 cp -a lighttpd.conf $RPM_BUILD_ROOT%{_sysconfdir}/lighttpd.conf
 
+ln -s %{_sysconfdir}/config.cfg $RPM_BUILD_ROOT%{_appdir}/config/config.cfg
+ln -s %{_sysconfdir}/lam.conf $RPM_BUILD_ROOT%{_appdir}/config/lam.conf
+
 %triggerin -- apache1 < 1.3.37-3, apache1-base
 %webapp_register apache %{_webapp}
 
@@ -147,3 +149,5 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/config.cfg
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/lam.conf
 %{_appdir}
+%dir %attr(740,http,http) %{_appdir}/sess
+%dir %attr(740,http,http) %{_appdir}/tmp
