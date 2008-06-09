@@ -16,10 +16,15 @@ Requires:	webapps
 Requires(triggerpostun):	sed >= 4.0
 %endif
 Requires:	php(gettext)
+Requires:	php(iconv)
 Requires:	php(ldap)
 Requires:	php(mhash)
 Requires:	php(pcre)
-Requires:	webserver = apache
+Requires:	php(xml)
+Requires:	webserver(access)
+Requires:	webserver(alias)
+Requires:	webserver(indexfile)
+Requires:	webserver(php)
 BuildArch:	noarch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -28,46 +33,48 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %define		_sysconfdir	%{_webapps}/%{_webapp}
 %define		_appdir		%{_datadir}/%{_webapp}
 
-
 %description
 LDAP Account Manager (LAM) is a webfrontend for managing accounts
-stored in an LDAP server. Features:
-- management of Unix user and group accounts (posixAccount/posixGroup)
-- management of Samba 2.x/3 user and host accounts
-  (sambaAccount/sambaSamAccount)
-- profiles for account creation
-- editor for organizational units (OU)
-- account creation via file upload
-- automatic creation/deletion of home directories
-- setting quotas
-- support for LDAP+SSL
-- multi-language support (English, French, German, Hungarian,
-  Japanese)
-- multiple configuration files
-- PDF output for user/group/host accounts
-- additional text for user PDFs
-- supports multiple password hashes
+stored in an LDAP server.
 
+Features:
+ - management of Unix user and group accounts (posixAccount/posixGroup)
+ - management of Samba 2.x/3 user and host accounts
+   (sambaAccount/sambaSamAccount)
+ - profiles for account creation
+ - editor for organizational units (OU)
+ - account creation via file upload
+ - automatic creation/deletion of home directories
+ - setting quotas
+ - support for LDAP+SSL
+ - multi-language support (English, French, German, Hungarian,
+   Japanese)
+ - multiple configuration files
+ - PDF output for user/group/host accounts
+ - additional text for user PDFs
+ - supports multiple password hashes
 
 %description -l pl.UTF-8
 LDAP Account Manager (LAM) to interfejs WWW do zarządzania kontami
-przechowywanymi na serwerze LDAP. Możliwości:
-- zarządzanie kontami uniksowych użytkowników i grup
-  (posixAccount/posixGroup)
-- zarządzanie kontami użytkowników i hostów Samby 2.x/3
-  (sambaAccount/sambaSamAccount)
-- tworzenie profili dla kont
-- edytor jednostej organizacyjnych (OU)
-- tworzenie kont poprzez upload plików
-- automatyczne tworzenie/usuwanie katalogów domowych
-- ustawianie quot
-- obsługa LDAP+SSL
-- obsługa wielu języków (angielski, francuski, niemiecki, węgierski,
-  japoński)
-- wiele plików konfiguracyjnych
-- wyjście PDF dla kont użytkowników/grup/hostów
-- dodatkowy tekst dla PDF-ów użytkownika
-- obsługa wielu skrótów haseł
+przechowywanymi na serwerze LDAP.
+
+Możliwości:
+ - zarządzanie kontami uniksowych użytkowników i grup
+   (posixAccount/posixGroup)
+ - zarządzanie kontami użytkowników i hostów Samby 2.x/3
+   (sambaAccount/sambaSamAccount)
+ - tworzenie profili dla kont
+ - edytor jednostej organizacyjnych (OU)
+ - tworzenie kont poprzez upload plików
+ - automatyczne tworzenie/usuwanie katalogów domowych
+ - ustawianie quot
+ - obsługa LDAP+SSL
+ - obsługa wielu języków (angielski, francuski, niemiecki, węgierski,
+   japoński)
+ - wiele plików konfiguracyjnych
+ - wyjście PDF dla kont użytkowników/grup/hostów
+ - dodatkowy tekst dla PDF-ów użytkownika
+ - obsługa wielu skrótów haseł
 
 %prep
 %setup -q
@@ -84,7 +91,6 @@ alias.url += (
     "/%{_name}" => "%{_appdir}",
 )
 EOF
-
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -133,10 +139,8 @@ ln -s %{_sysconfdir}/lam.conf $RPM_BUILD_ROOT%{_appdir}/config/lam.conf
 %triggerun -- lighttpd
 %webapp_unregister lighttpd %{_webapp}
 
-
 %clean
 rm -rf $RPM_BUILD_ROOT
-
 
 %files
 %defattr(644,root,root,755)
@@ -147,6 +151,16 @@ rm -rf $RPM_BUILD_ROOT
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/lighttpd.conf
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/config.cfg
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/lam.conf
-%{_appdir}
+%dir %{_appdir}
 %dir %attr(740,http,http) %{_appdir}/sess
+%{_appdir}/sess/.htaccess
 %dir %attr(740,http,http) %{_appdir}/tmp
+%{_appdir}/tmp/.htaccess
+%{_appdir}/config
+%{_appdir}/graphics
+%{_appdir}/help
+%{_appdir}/lib
+%{_appdir}/locale
+%{_appdir}/style
+%{_appdir}/templates
+%{_appdir}/index.html
