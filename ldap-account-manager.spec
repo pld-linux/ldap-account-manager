@@ -12,9 +12,6 @@ Source0:	http://dl.sourceforge.net/lam/%{name}-%{version}.tar.gz
 URL:		http://lam.sourceforge.net/
 BuildRequires:	rpmbuild(macros) >= 1.268
 Requires:	webapps
-%if %{with trigger}
-Requires(triggerpostun):	sed >= 4.0
-%endif
 Requires:	php(gettext)
 Requires:	php(iconv)
 Requires:	php(ldap)
