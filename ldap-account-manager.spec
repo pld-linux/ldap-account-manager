@@ -3,12 +3,12 @@
 Summary:	LDAP Account Manager (LAM) - a webfrontend for managing accounts stored in an LDAP server
 Summary(pl.UTF-8):	LDAP Account Manager (LAM) - interfejs WWW do zarządzania kontami na serwerze LDAP
 Name:		ldap-account-manager
-Version:	2.3.0
+Version:	2.6.0
 Release:	0.1
 License:	GPL v2
 Group:		Applications/Networking
 Source0:	http://dl.sourceforge.net/lam/%{name}-%{version}.tar.gz
-# Source0-md5:	ceb5c6b795be2f3030b695b7f105e6f2
+# Source0-md5:	8e08d068a3d244f577425bf045051f6c
 URL:		http://lam.sourceforge.net/
 BuildRequires:	rpmbuild(macros) >= 1.268
 Requires:	webapps
