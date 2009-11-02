@@ -1,6 +1,6 @@
 --- ldap-account-manager-2.8.0/lib/config.inc	2009-11-02 14:12:38.657153013 +0200
 +++ ldap-account-manager-2.8.0/lib/config.inc	2009-11-02 14:12:38.657153013 +0200
-@@ -100,7 +100,7 @@
+@@ -100,12 +100,16 @@
  * @return array profile names
  */
  function getConfigProfiles() {
@@ -9,7 +9,16 @@
  	$ret = array();
  	$pos = 0;
  	while ($entry = $dir->read()){
-@@ -442,7 +442,7 @@
+ 		$ext = substr($entry, strlen($entry)-5, 5);
+ 		$name = substr($entry, 0, strlen($entry)-5);
++		// ignore apache,httpd,lighttpd config files
++		if (in_array($name, array('apache', 'httpd', 'lighttpd'))) {
++			continue;
++		}
+ 		// check if extension is right, add to profile list
+ 		if ($ext == ".conf") {
+ 			$ret[$pos] = $name;
+@@ -442,7 +446,7 @@
  	 * @return string path on filesystem
  	 */
  	private function getPath() {
@@ -18,7 +27,7 @@
  	}
  
  	// functions to read/write preferences
-@@ -1044,7 +1044,7 @@
+@@ -1044,7 +1048,7 @@
  	* @return boolean true if file was readable
  	*/
  	private function reload() {
@@ -27,7 +36,7 @@
  		if (is_file($conffile) == True) {
  			$file = @fopen($conffile, "r");
  			if (!$file) return false; // abort if file is not readable
-@@ -1071,7 +1071,7 @@
+@@ -1071,7 +1075,7 @@
  	* Saves preferences to config file config.cfg
  	*/
  	public function save() {
