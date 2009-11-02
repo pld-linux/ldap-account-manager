@@ -1,10 +1,12 @@
+# TODO
+# - ldap schema package: docs/schema/dhcp.schema
 %include	/usr/lib/rpm/macros.perl
 Summary:	Administration of LDAP users, groups and hosts via Web GUI
 Summary(de.UTF-8):	Administration von Benutzern, Gruppen und Hosts für LDAP-Server
 Summary(pl.UTF-8):	LDAP Account Manager (LAM) - interfejs WWW do zarządzania kontami na serwerze LDAP
 Name:		ldap-account-manager
 Version:	2.8.0
-Release:	0.2
+Release:	0.10
 License:	GPL v2+
 Group:		Applications/WWW
 Source0:	http://dl.sourceforge.net/lam/%{name}-%{version}.tar.gz
@@ -12,6 +14,7 @@ Source0:	http://dl.sourceforge.net/lam/%{name}-%{version}.tar.gz
 Source1:	apache.conf
 Source2:	lighttpd.conf
 URL:		http://lam.sourceforge.net/
+Patch0:	configdir.patch
 BuildRequires:	rpmbuild(macros) >= 1.268
 Requires:	perl-base
 Requires:	php-common >= 4:5.0
@@ -19,7 +22,6 @@ Requires:	php-gettext
 Requires:	php-hash
 Requires:	php-iconv
 Requires:	php-ldap
-Requires:	php-mhash
 Requires:	php-pcre
 Requires:	php-session
 Requires:	php-xml
@@ -35,6 +37,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %define		_webapp		%{name}
 %define		_sysconfdir	%{_webapps}/%{_webapp}
 %define		_appdir		%{_datadir}/%{_webapp}
+%define		_phpdocdir	%{_docdir}/phpdoc
 
 %description
 LDAP Account Manager (LAM) is a webfrontend for managing accounts
@@ -107,36 +110,47 @@ Lamdaemon ist Teil von LDAP Account Manager. Dieses Paket wird auf dem
 Server installiert, auf dem Quotas und Heimatverzeichnisse verwaltet
 werden sollen.
 
+%package phpdoc
+Summary:	Online manual for LDAP Account Manager
+Summary(pl.UTF-8):	Dokumentacja online do LDAP Account Manager
+Group:		Documentation
+Requires:	php-dirs
+
+%description phpdoc
+Documentation for LDAP Account Manager.
+
+%description phpdoc -l pl.UTF-8
+Dokumentacja do LDAP Account Manager.
+
 %prep
 %setup -q
+%patch0 -p1
+
+cp -a config/config.cfg{_sample,}
+cp -a config/lam.conf{_sample,}
+mv config/*_sample .
+
+find -name .htaccess | xargs rm
+
+rm COPYING Makefile.in configure install.sh docs/README.fpdf.htm
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d \
-	$RPM_BUILD_ROOT{%{_sysconfdir},%{_appdir}} \
-	$RPM_BUILD_ROOT%{_appdir}/{config,graphics,help,sess,style,tmp,templates,lib,locale}
+install -d $RPM_BUILD_ROOT{%{_sysconfdir},%{_appdir},%{_phpdocdir}}
 
-cp -a index.html $RPM_BUILD_ROOT%{_appdir}
-cp -a config/* $RPM_BUILD_ROOT%{_appdir}/config
-cp -a config/config.cfg_sample $RPM_BUILD_ROOT%{_sysconfdir}/config.cfg
-cp -a config/lam.conf_sample $RPM_BUILD_ROOT%{_sysconfdir}/lam.conf
-cp -a graphics/*.{png,jpg} $RPM_BUILD_ROOT%{_appdir}/graphics
-cp -a help/help.inc $RPM_BUILD_ROOT%{_appdir}/help
-cp -a lib/* $RPM_BUILD_ROOT%{_appdir}/lib
-cp -a sess/.htaccess $RPM_BUILD_ROOT%{_appdir}/sess
-cp -a style/*css $RPM_BUILD_ROOT%{_appdir}/style
-cp -a templates/* $RPM_BUILD_ROOT%{_appdir}/templates
-cp -a tmp/.htaccess $RPM_BUILD_ROOT%{_appdir}/tmp
-cp -a locale/* $RPM_BUILD_ROOT%{_appdir}/locale
+cp -a . $RPM_BUILD_ROOT%{_appdir}
 
-rm -f 	$RPM_BUILD_ROOT%{_appdir}/config/*_sample
-
+# config
+mv $RPM_BUILD_ROOT{%{_appdir}/config/*,%{_sysconfdir}}
 cp -a %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/apache.conf
 cp -a %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/httpd.conf
 cp -a %{SOURCE2} $RPM_BUILD_ROOT%{_sysconfdir}/lighttpd.conf
 
-ln -s %{_sysconfdir}/config.cfg $RPM_BUILD_ROOT%{_appdir}/config/config.cfg
-ln -s %{_sysconfdir}/lam.conf $RPM_BUILD_ROOT%{_appdir}/config/lam.conf
+# apidocs
+mv $RPM_BUILD_ROOT{%{_appdir}/docs/devel,%{_phpdocdir}/%{name}}
+
+# in %doc
+rm $RPM_BUILD_ROOT%{_appdir}/{docs/*.txt,HISTORY,INSTALL,README,VERSION,copyright}
 
 %triggerin -- apache1 < 1.3.37-3, apache1-base
 %webapp_register apache %{_webapp}
@@ -161,16 +175,27 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc docs/*.txt COPYING HISTORY INSTALL README VERSION
+%doc docs/*.txt HISTORY INSTALL README VERSION copyright
 %dir %attr(750,root,http) %{_sysconfdir}
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/apache.conf
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/httpd.conf
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/lighttpd.conf
 %attr(640,root,http) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/config.cfg
 %attr(640,root,http) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/lam.conf
+%attr(640,root,http) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/passwordMailTemplate.txt
+%attr(640,root,http) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/shells
+%attr(640,root,http) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/language
+%dir %attr(750,root,http) %{_sysconfdir}/pdf
+%attr(640,root,http) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/pdf/default.*.xml
+%dir %attr(750,root,http) %{_sysconfdir}/pdf/logos
+%attr(640,root,http) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/pdf/logos/*.jpg
+%dir %attr(750,root,http) %{_sysconfdir}/profiles
+%attr(640,root,http) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/profiles/default.*
+%dir %attr(750,root,http) %{_sysconfdir}/selfService
+%attr(640,root,http) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/selfService/default.*
 
 %dir %{_appdir}
-%{_appdir}/config
+%{_appdir}/*_sample
 %{_appdir}/graphics
 %{_appdir}/help
 %{_appdir}/lib
@@ -181,10 +206,12 @@ rm -rf $RPM_BUILD_ROOT
 
 # XXX: use /var
 %dir %attr(740,http,http) %{_appdir}/sess
-%{_appdir}/sess/.htaccess
 %dir %attr(740,http,http) %{_appdir}/tmp
-%{_appdir}/tmp/.htaccess
 
 %files lamdaemon
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_appdir}/lib/lamdaemon.pl
+
+%files phpdoc
+%defattr(644,root,root,755)
+%{_phpdocdir}/%{name}

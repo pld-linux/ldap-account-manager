@@ -1,0 +1,235 @@
+--- ldap-account-manager-2.8.0/lib/config.inc	2009-11-02 14:12:38.657153013 +0200
++++ ldap-account-manager-2.8.0/lib/config.inc	2009-11-02 14:12:38.657153013 +0200
+@@ -100,7 +100,7 @@
+ * @return array profile names
+ */
+ function getConfigProfiles() {
+-	$dir = dir(substr(__FILE__, 0, strlen(__FILE__) - 15) . "/config");
++	$dir = dir("/etc/webapps/ldap-account-manager");
+ 	$ret = array();
+ 	$pos = 0;
+ 	while ($entry = $dir->read()){
+@@ -442,7 +442,7 @@
+ 	 * @return string path on filesystem
+ 	 */
+ 	private function getPath() {
+-		return substr(__FILE__, 0, strlen(__FILE__) - 15) . "/config/" . $this->file . ".conf";
++		return "/etc/webapps/ldap-account-manager/" . $this->file . ".conf";
+ 	}
+ 
+ 	// functions to read/write preferences
+@@ -1044,7 +1044,7 @@
+ 	* @return boolean true if file was readable
+ 	*/
+ 	private function reload() {
+-		$conffile = substr(__FILE__, 0, strlen(__FILE__) - 15) . "/config/config.cfg";
++		$conffile = "/etc/webapps/ldap-account-manager/config.cfg";
+ 		if (is_file($conffile) == True) {
+ 			$file = @fopen($conffile, "r");
+ 			if (!$file) return false; // abort if file is not readable
+@@ -1071,7 +1071,7 @@
+ 	* Saves preferences to config file config.cfg
+ 	*/
+ 	public function save() {
+-		$conffile = substr(__FILE__, 0, strlen(__FILE__) - 15) . "/config/config.cfg";
++		$conffile = "/etc/webapps/ldap-account-manager/config.cfg";
+ 		if (is_file($conffile) == True) {
+ 			$file = fopen($conffile, "r");
+ 			$file_array = array();
+--- ldap-account-manager-2.8.0/lib/account.inc~	2009-10-28 18:35:23.000000000 +0200
++++ ldap-account-manager-2.8.0/lib/account.inc	2009-11-02 14:14:11.593795230 +0200
+@@ -40,8 +40,8 @@
+ function getshells() {
+ 	if (!isset($_SESSION['lampath'])) return array();
+ 	// Load shells from file
+-	if (file_exists($_SESSION['lampath'] . 'config/shells')) {
+-		$shells = file($_SESSION['lampath'] . 'config/shells');
++	if (file_exists('/etc/webapps/ldap-account-manager/shells')) {
++		$shells = file('/etc/webapps/ldap-account-manager/shells');
+ 		$i = 0;
+ 		while (count($shells) > $i) {
+ 			// remove whitespaces
+--- ldap-account-manager-2.8.0/lib/selfService.inc~	2009-10-27 20:45:22.000000000 +0200
++++ ldap-account-manager-2.8.0/lib/selfService.inc	2009-11-02 14:15:23.960530506 +0200
+@@ -136,7 +136,7 @@
+ */
+ function getSelfServiceProfiles() {
+ 	$types = getTypes();
+-	$dir = dir(substr(__FILE__, 0, strlen(__FILE__) - 20) . "/config/selfService");
++	$dir = dir("/etc/webapps/ldap-account-manager/selfService");
+ 	$ret = array();
+ 	while ($entry = $dir->read()){
+ 		$ext = substr($entry, strrpos($entry, '.') + 1);
+@@ -162,7 +162,7 @@
+ 	if (!preg_match("/^[0-9a-z _-]+$/i", $name)) return false;
+ 	if (!preg_match("/^[0-9a-z _-]+$/i", $scope)) return false;
+ 	$profile = new selfServiceProfile();
+-	$file = substr(__FILE__, 0, strlen(__FILE__) - 20) . "/config/selfService/" . $name . "." . $scope;
++	$file = "/etc/webapps/ldap-account-manager/selfService/" . $name . "." . $scope;
+ 	if (is_file($file) === True) {
+ 		$file = @fopen($file, "r");
+ 		if ($file) {
+@@ -198,7 +198,7 @@
+ 	if (!get_class($profile) === 'selfServiceProfile') {
+ 		return false;
+ 	}
+-	$path = substr(__FILE__, 0, strlen(__FILE__) - 20) . "/config/selfService/" . $name . "." . $scope;
++	$path = "/etc/webapps/ldap-account-manager/selfService/" . $name . "." . $scope;
+ 	$file = @fopen($path, "w");
+ 	if ($file) {
+ 	  	// write settings to file
+--- ldap-account-manager-2.8.0/lib/lamPDF.inc~	2009-10-27 20:45:22.000000000 +0200
++++ ldap-account-manager-2.8.0/lib/lamPDF.inc	2009-11-02 14:16:14.614959661 +0200
+@@ -87,7 +87,7 @@
+ 	 */
+ 	function header() {
+ 		if($this->page_definitions['filename'] != 'none') {
+-			$imageFile = substr(__FILE__,0,strlen(__FILE__)- 14) . "config/pdf/logos/" . $this->page_definitions['filename'];
++			$imageFile = "/etc/webapps/ldap-account-manager/pdf/logos/" . $this->page_definitions['filename'];
+ 			$width = $this->page_definitions['logo-width'];
+ 			$height = $this->page_definitions['logo-height'];
+ 			if($this->page_definitions['logo-max'] == true) {
+--- ldap-account-manager-2.8.0/lib/profiles.inc~	2009-10-27 20:45:22.000000000 +0200
++++ ldap-account-manager-2.8.0/lib/profiles.inc	2009-11-02 14:17:06.030616922 +0200
+@@ -36,7 +36,7 @@
+ * @return array profile names
+ */
+ function getAccountProfiles($scope) {
+-	$dir = @dir(substr(__FILE__, 0, strlen(__FILE__) - 17) . "/config/profiles");
++	$dir = @dir("/etc/webapps/ldap-account-manager/profiles");
+ 	$ret = array();
+ 	$pos = 0;
+ 	if ($dir) {
+@@ -66,7 +66,7 @@
+ function loadAccountProfile($profile, $scope) {
+ 	if (!preg_match("/^[0-9a-z _-]+$/i", $profile) || !preg_match("/^[a-z]+$/i", $scope)) return false;
+ 	$settings = array();
+-	$file = substr(__FILE__, 0, strlen(__FILE__) - 17) . "/config/profiles/" . $profile . "." . $scope;
++	$file = "/etc/webapps/ldap-account-manager/profiles/" . $profile . "." . $scope;
+ 	if (is_file($file) == True) {
+ 		$file = @fopen($file, "r");
+ 		if ($file) {
+@@ -114,7 +114,7 @@
+ 	if (!is_array($attributes)) {
+ 		return false;
+ 	}
+-	$path = substr(__FILE__, 0, strlen(__FILE__) - 17) . "/config/profiles/" . $profile . "." . $scope;
++	$path = "/etc/webapps/ldap-account-manager/profiles/" . $profile . "." . $scope;
+ 	$file = @fopen($path, "w");
+ 	if ($file) {
+   	// write attributes
+@@ -147,7 +147,7 @@
+ function delAccountProfile($file, $scope) {
+ 	if (!$_SESSION['loggedIn'] == true) return false;
+ 	if (!preg_match("/^[0-9a-z _-]+$/i", $file) || !preg_match("/^[a-z]+$/i", $scope)) return false;
+-	$prof = substr(__FILE__, 0, strlen(__FILE__) - 16) . "config/profiles/" . $file . "." . $scope;
++	$prof = "/etc/webapps/ldap-account-manager/profiles/" . $file . "." . $scope;
+ 	if (is_file($prof)) {
+ 		return @unlink($prof);
+ 	}
+--- ldap-account-manager-2.8.0/lib/pdfstruct.inc~	2009-10-27 20:45:22.000000000 +0200
++++ ldap-account-manager-2.8.0/lib/pdfstruct.inc	2009-11-02 14:18:01.837096933 +0200
+@@ -46,7 +46,7 @@
+  */
+ function getPDFStructureDefinitions($scope = "user") {
+ 	$return = array();
+-	$path = $_SESSION['lampath'] . 'config/pdf/';
++	$path = '/etc/webapps/ldap-account-manager/pdf/';
+ 	if(is_dir($path)) {
+ 		$dirHandle = opendir($path);
+ 		while($file = readdir($dirHandle)) {
+@@ -71,7 +71,7 @@
+  */
+ function loadPDFStructureDefinitions($scope='user',$pdf_structure='default') {
+ 	$parser = new xmlParser();
+-	$file = $_SESSION['lampath'] . 'config/pdf/' . $pdf_structure . '.' . $scope . '.xml';
++	$file = '/etc/webapps/ldap-account-manager/pdf/' . $pdf_structure . '.' . $scope . '.xml';
+ 	$xml = $parser->parse($file);
+ 	$border = array();
+ 	$structure = array();
+@@ -100,8 +100,8 @@
+ function savePDFStructureDefinitions($scope,$definition) {
+ 	if (!preg_match('/[a-zA-Z0-9\-\_]+/',$definition)) return 'no perms';
+ 	if (!preg_match('/[a-zA-Z]+/',$scope)) return 'no perms';
+-	$struct_file = ($_SESSION['lampath'] . 'config/pdf/' . $definition . '.' . $scope . '.xml');
+-	if(!is_writable($_SESSION['lampath'] . 'config/pdf/')) {
++	$struct_file = ('/etc/webapps/ldap-account-manager/pdf/' . $definition . '.' . $scope . '.xml');
++	if(!is_writable('/etc/webapps/ldap-account-manager/pdf/')) {
+ 		return 'no perms';
+ 	}
+ 	else {
+@@ -158,7 +158,7 @@
+ function deletePDFStructureDefinition($scope, $definition) {
+ 	if (!preg_match('/[a-zA-Z0-9\-\_]+/',$definition)) return false;
+ 	if (!preg_match('/[a-zA-Z]+/',$scope)) return false;
+-	$file = $_SESSION['lampath'] . 'config/pdf/' . $definition . '.' . $scope . '.xml';
++	$file = '/etc/webapps/ldap-account-manager/pdf/' . $definition . '.' . $scope . '.xml';
+ 	if(is_file($file) && is_writable($file)) {
+ 		return unlink($file);
+ 	}
+@@ -175,7 +175,7 @@
+  */
+ function getAvailableLogos() {
+ 	$return = array();
+-	$dirPath = $_SESSION['lampath'] . '/config/pdf/logos/';
++	$dirPath = '/etc/webapps/ldap-account-manager/pdf/logos/';
+ 	$dirHandle = opendir($dirPath);
+ 	while($file = readdir($dirHandle)) {
+ 		if(!is_dir($file) && $file != '.' && $file != '..' && preg_match('/\\.(jpg|png)$/',$file)) {
+--- ldap-account-manager-2.8.0/templates/login.php~	2009-10-28 18:35:42.000000000 +0200
++++ ldap-account-manager-2.8.0/templates/login.php	2009-11-02 14:19:06.193764622 +0200
+@@ -157,7 +157,7 @@
+ 	$_SESSION['header'] .= "<meta http-equiv=\"pragma\" content=\"no-cache\">\n		<meta http-equiv=\"cache-control\" content=\"no-cache\">";
+ 
+ 	// loading available languages from language.conf file
+-	$languagefile = "../config/language";
++	$languagefile = "/etc/webapps/ldap-account-manager/language";
+ 	if(is_file($languagefile) == True)
+ 	{
+ 		$file = fopen($languagefile, "r");
+--- ldap-account-manager-2.8.0/templates/config/confmain.php~	2009-10-27 20:46:33.000000000 +0200
++++ ldap-account-manager-2.8.0/templates/config/confmain.php	2009-11-02 14:19:29.863970973 +0200
+@@ -326,7 +326,7 @@
+ echo ("<tr>");
+ echo ("<td><b>" . _("Default language") . ":</b></td><td>\n");
+ // read available languages
+-$languagefile = "../../config/language";
++$languagefile = "/etc/webapps/ldap-account-manager/language";
+ if(is_file($languagefile))
+ {
+ 	$file = fopen($languagefile, "r");
+--- ldap-account-manager-2.8.0/templates/config/profmanage.php~	2009-10-27 20:46:33.000000000 +0200
++++ ldap-account-manager-2.8.0/templates/config/profmanage.php	2009-11-02 14:21:36.393739313 +0200
+@@ -77,9 +77,9 @@
+ 			// check profile password
+ 			if ($_POST['addpassword'] && $_POST['addpassword2'] && ($_POST['addpassword'] == $_POST['addpassword2'])) {
+ 				// create new profile file
+-				@copy("../../config/lam.conf_sample", "../../config/" . $_POST['addprofile'] . ".conf");
+-				@chmod ("../../config/" . $_POST['addprofile'] . ".conf", 0600);
+-				$file = is_file("../../config/" . $_POST['addprofile'] . ".conf");
++				@copy("../../lam.conf_sample", "/etc/webapps/ldap-account-manager/" . $_POST['addprofile'] . ".conf");
++				@chmod ("/etc/webapps/ldap-account-manager/" . $_POST['addprofile'] . ".conf", 0600);
++				$file = is_file("/etc/webapps/ldap-account-manager/". $_POST['addprofile'] . ".conf");
+ 				if ($file) {
+ 					// load as config and write new password
+ 					$conf = new LAMConfig($_POST['addprofile']);
+@@ -96,8 +96,8 @@
+ 	// rename profile
+ 	elseif ($_POST['action'] == "rename") {
+ 		if (preg_match("/^[a-z0-9_-]+$/i", $_POST['renfilename']) && !in_array($_POST['renfilename'], getConfigProfiles())) {
+-			if (rename("../../config/" . $_POST['oldfilename'] . ".conf",
+-				"../../config/" . $_POST['renfilename'] . ".conf")) {
++			if (rename("/etc/webapps/ldap-account-manager/" . $_POST['oldfilename'] . ".conf",
++				"/etc/webapps/ldap-account-manager/" . $_POST['renfilename'] . ".conf")) {
+ 				$msg = _("Renamed profile.");
+ 			}
+ 			else $error = _("Could not rename file!");
+@@ -106,7 +106,7 @@
+ 	}
+ 	// delete profile
+ 	elseif ($_POST['action'] == "delete") {
+-		if (preg_match("/^[a-z0-9_-]+$/i", $_POST['delfilename']) && @unlink("../../config/" . $_POST['delfilename'] . ".conf")) {
++		if (preg_match("/^[a-z0-9_-]+$/i", $_POST['delfilename']) && @unlink("/etc/webapps/ldap-account-manager/" . $_POST['delfilename'] . ".conf")) {
+ 			$msg = _("Profile deleted.");
+ 		}
+ 		else $error = _("Unable to delete profile!");
