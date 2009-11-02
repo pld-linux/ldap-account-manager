@@ -1,23 +1,29 @@
-#
-%define		_name	lam
-Summary:	LDAP Account Manager (LAM) - a webfrontend for managing accounts stored in an LDAP server
+%include	/usr/lib/rpm/macros.perl
+Summary:	Administration of LDAP users, groups and hosts via Web GUI
+Summary(de.UTF-8):	Administration von Benutzern, Gruppen und Hosts für LDAP-Server
 Summary(pl.UTF-8):	LDAP Account Manager (LAM) - interfejs WWW do zarządzania kontami na serwerze LDAP
 Name:		ldap-account-manager
-Version:	2.6.0
-Release:	0.1
-License:	GPL v2
-Group:		Applications/Networking
+Version:	2.8.0
+Release:	0.2
+License:	GPL v2+
+Group:		Applications/WWW
 Source0:	http://dl.sourceforge.net/lam/%{name}-%{version}.tar.gz
 # Source0-md5:	8e08d068a3d244f577425bf045051f6c
+Source1:	apache.conf
+Source2:	lighttpd.conf
 URL:		http://lam.sourceforge.net/
 BuildRequires:	rpmbuild(macros) >= 1.268
+Requires:	perl-base
+Requires:	php-common >= 4:5.0
+Requires:	php-gettext
+Requires:	php-hash
+Requires:	php-iconv
+Requires:	php-ldap
+Requires:	php-mhash
+Requires:	php-pcre
+Requires:	php-session
+Requires:	php-xml
 Requires:	webapps
-Requires:	php(gettext)
-Requires:	php(iconv)
-Requires:	php(ldap)
-Requires:	php(mhash)
-Requires:	php(pcre)
-Requires:	php(xml)
 Requires:	webserver(access)
 Requires:	webserver(alias)
 Requires:	webserver(indexfile)
@@ -73,47 +79,61 @@ Możliwości:
  - dodatkowy tekst dla PDF-ów użytkownika
  - obsługa wielu skrótów haseł
 
+%description -l de.UTF-8
+LDAP Account Manager (LAM) läuft auf einem exisierenden Webserver. LAM
+verwaltet Benutzer, Gruppen und Hosts. Zur Zeit werden folgende
+Account-Typen unterstützt: Samba 3, Unix, Kolab 2, Addressbuch
+Einträge, NIS mail Aliase und MAC-Addressen. Es gibt eine Baumansicht
+mit der man die LDAP-Daten direkt bearbeiten kann. Zum Anlegen von
+Accounts können Vorlagen definiert werden. Es können mehrere
+Konfigurations-Profile definiert werden. Account-Informationen können
+als PDF exportiert werden. Außerdem exisitiert ein Script mit dem man
+Quotas und Home-Verzeichnisse verwalten kann.
+
+%package lamdaemon
+Summary:	Quota and home directory management for LDAP Account Manager
+Summary(de.UTF-8):	Verwaltung von Quotas und Heimatverzeichnissen für LDAP Account Manager
+Group:		Productivity/Networking/Web/Frontends
+Requires:	perl-base
+Requires:	sudo
+
+%description lamdaemon
+Lamdaemon is part of LDAP Account Manager. This package needs to be
+installed on the server where the home directories reside and/or
+quotas should be managed.
+
+%description lamdaemon -l de.UTF-8
+Lamdaemon ist Teil von LDAP Account Manager. Dieses Paket wird auf dem
+Server installiert, auf dem Quotas und Heimatverzeichnisse verwaltet
+werden sollen.
+
 %prep
 %setup -q
 
-cat > apache.conf <<'EOF'
-Alias /%{_name} %{_appdir}
-<Directory %{_appdir}>
-	Allow from all
-</Directory>
-EOF
-
-cat > lighttpd.conf <<'EOF'
-alias.url += (
-    "/%{_name}" => "%{_appdir}",
-)
-EOF
-
 %install
 rm -rf $RPM_BUILD_ROOT
-
 install -d \
 	$RPM_BUILD_ROOT{%{_sysconfdir},%{_appdir}} \
 	$RPM_BUILD_ROOT%{_appdir}/{config,graphics,help,sess,style,tmp,templates,lib,locale}
 
-install	index.html			$RPM_BUILD_ROOT%{_appdir}
-cp -a	config/*			$RPM_BUILD_ROOT%{_appdir}/config
-install	config/config.cfg_sample	$RPM_BUILD_ROOT%{_sysconfdir}/config.cfg
-install	config/lam.conf_sample		$RPM_BUILD_ROOT%{_sysconfdir}/lam.conf
-install	graphics/*.{png,jpg}		$RPM_BUILD_ROOT%{_appdir}/graphics
-install	help/help.inc			$RPM_BUILD_ROOT%{_appdir}/help
-cp -a	lib/*				$RPM_BUILD_ROOT%{_appdir}/lib
-install	sess/.htaccess			$RPM_BUILD_ROOT%{_appdir}/sess
-install	style/*css			$RPM_BUILD_ROOT%{_appdir}/style
-cp -a	templates/*			$RPM_BUILD_ROOT%{_appdir}/templates
-install	tmp/.htaccess			$RPM_BUILD_ROOT%{_appdir}/tmp
-cp -a	locale/*			$RPM_BUILD_ROOT%{_appdir}/locale
+cp -a index.html $RPM_BUILD_ROOT%{_appdir}
+cp -a config/* $RPM_BUILD_ROOT%{_appdir}/config
+cp -a config/config.cfg_sample $RPM_BUILD_ROOT%{_sysconfdir}/config.cfg
+cp -a config/lam.conf_sample $RPM_BUILD_ROOT%{_sysconfdir}/lam.conf
+cp -a graphics/*.{png,jpg} $RPM_BUILD_ROOT%{_appdir}/graphics
+cp -a help/help.inc $RPM_BUILD_ROOT%{_appdir}/help
+cp -a lib/* $RPM_BUILD_ROOT%{_appdir}/lib
+cp -a sess/.htaccess $RPM_BUILD_ROOT%{_appdir}/sess
+cp -a style/*css $RPM_BUILD_ROOT%{_appdir}/style
+cp -a templates/* $RPM_BUILD_ROOT%{_appdir}/templates
+cp -a tmp/.htaccess $RPM_BUILD_ROOT%{_appdir}/tmp
+cp -a locale/* $RPM_BUILD_ROOT%{_appdir}/locale
 
 rm -f 	$RPM_BUILD_ROOT%{_appdir}/config/*_sample
 
-cp -a apache.conf $RPM_BUILD_ROOT%{_sysconfdir}/apache.conf
-cp -a apache.conf $RPM_BUILD_ROOT%{_sysconfdir}/httpd.conf
-cp -a lighttpd.conf $RPM_BUILD_ROOT%{_sysconfdir}/lighttpd.conf
+cp -a %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/apache.conf
+cp -a %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/httpd.conf
+cp -a %{SOURCE2} $RPM_BUILD_ROOT%{_sysconfdir}/lighttpd.conf
 
 ln -s %{_sysconfdir}/config.cfg $RPM_BUILD_ROOT%{_appdir}/config/config.cfg
 ln -s %{_sysconfdir}/lam.conf $RPM_BUILD_ROOT%{_appdir}/config/lam.conf
@@ -141,18 +161,15 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc docs/*
+%doc docs/*.txt COPYING HISTORY INSTALL README VERSION
 %dir %attr(750,root,http) %{_sysconfdir}
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/apache.conf
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/httpd.conf
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/lighttpd.conf
-%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/config.cfg
-%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/lam.conf
+%attr(640,root,http) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/config.cfg
+%attr(640,root,http) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/lam.conf
+
 %dir %{_appdir}
-%dir %attr(740,http,http) %{_appdir}/sess
-%{_appdir}/sess/.htaccess
-%dir %attr(740,http,http) %{_appdir}/tmp
-%{_appdir}/tmp/.htaccess
 %{_appdir}/config
 %{_appdir}/graphics
 %{_appdir}/help
@@ -161,3 +178,13 @@ rm -rf $RPM_BUILD_ROOT
 %{_appdir}/style
 %{_appdir}/templates
 %{_appdir}/index.html
+
+# XXX: use /var
+%dir %attr(740,http,http) %{_appdir}/sess
+%{_appdir}/sess/.htaccess
+%dir %attr(740,http,http) %{_appdir}/tmp
+%{_appdir}/tmp/.htaccess
+
+%files lamdaemon
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_appdir}/lib/lamdaemon.pl
