@@ -1,0 +1,11 @@
+--- /usr/share/ldap-account-manager/lib/ldap.inc~	2009-10-28 18:35:23.000000000 +0200
++++ /usr/share/ldap-account-manager/lib/ldap.inc	2009-11-10 11:04:34.889151265 +0200
+@@ -166,7 +166,7 @@
+ 	function server() {
+ 		if (!$this->is_connected) {
+ 			$data = $this->decrypt_login();
+-			$this->connect($data[0], $data[1]);
++			$this->connect($data[0], $data[1], true);
+ 			$this->is_connected = true;
+ 		}
+ 		return $this->server;
