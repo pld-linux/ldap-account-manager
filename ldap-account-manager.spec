@@ -6,7 +6,7 @@ Summary(de.UTF-8):	Administration von Benutzern, Gruppen und Hosts für LDAP-Ser
 Summary(pl.UTF-8):	LDAP Account Manager (LAM) - interfejs WWW do zarządzania kontami na serwerze LDAP
 Name:		ldap-account-manager
 Version:	2.8.0
-Release:	0.12
+Release:	0.13
 License:	GPL v2+
 Group:		Applications/WWW
 Source0:	http://dl.sourceforge.net/lam/%{name}-%{version}.tar.gz
@@ -14,7 +14,8 @@ Source0:	http://dl.sourceforge.net/lam/%{name}-%{version}.tar.gz
 Source1:	apache.conf
 Source2:	lighttpd.conf
 URL:		http://lam.sourceforge.net/
-Patch0:	configdir.patch
+Patch0:		configdir.patch
+Patch1:		loginbysearch.patch
 BuildRequires:	rpmbuild(macros) >= 1.268
 Requires:	perl-base
 Requires:	php-common >= 4:5.0
@@ -125,6 +126,7 @@ Dokumentacja do LDAP Account Manager.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 
 cp -a config/config.cfg{_sample,}
 cp -a config/lam.conf{_sample,}
@@ -133,6 +135,8 @@ mv config/*_sample .
 find -name .htaccess | xargs rm
 
 rm COPYING Makefile.in configure install.sh docs/README.fpdf.htm
+
+rm locale/*/LC_MESSAGES/*.po
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -199,10 +203,26 @@ rm -rf $RPM_BUILD_ROOT
 %{_appdir}/graphics
 %{_appdir}/help
 %{_appdir}/lib
-%{_appdir}/locale
 %{_appdir}/style
 %{_appdir}/templates
 %{_appdir}/index.html
+
+%dir %{_appdir}/locale
+# XXX: verify language codes
+%lang(ca_ES) %{_appdir}/locale/ca_ES
+%lang(cs) %{_appdir}/locale/cs_CZ
+%lang(de) %{_appdir}/locale/de_DE
+%lang(es) %{_appdir}/locale/es_ES
+%lang(fr) %{_appdir}/locale/fr_FR
+%lang(hu) %{_appdir}/locale/hu_HU
+%lang(it) %{_appdir}/locale/it_IT
+%lang(ja) %{_appdir}/locale/ja_JP
+%lang(nl) %{_appdir}/locale/nl_NL
+%lang(pl) %{_appdir}/locale/pl_PL
+%lang(pt_BR) %{_appdir}/locale/pt_BR
+%lang(ru) %{_appdir}/locale/ru_RU
+%lang(zh_CN) %{_appdir}/locale/zh_CN
+%lang(zh_TW) %{_appdir}/locale/zh_TW
 
 # XXX: move out of lam topdir
 %exclude %{_appdir}/lib/lamdaemon.pl
