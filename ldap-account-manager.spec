@@ -97,7 +97,7 @@ Quotas und Home-Verzeichnisse verwalten kann.
 %package lamdaemon
 Summary:	Quota and home directory management for LDAP Account Manager
 Summary(de.UTF-8):	Verwaltung von Quotas und Heimatverzeichnissen für LDAP Account Manager
-Group:		Productivity/Networking/Web/Frontends
+Group:		Applications/WWW
 Requires:	perl-base
 Requires:	sudo
 
