@@ -27,24 +27,15 @@
  	}
  
  	// functions to read/write preferences
-@@ -1044,7 +1048,7 @@
- 	* @return boolean true if file was readable
+@@ -1035,7 +1035,7 @@
+ 	* Loads preferences from config file
  	*/
- 	private function reload() {
--		$conffile = substr(__FILE__, 0, strlen(__FILE__) - 15) . "/config/config.cfg";
-+		$conffile = "/etc/webapps/ldap-account-manager/config.cfg";
- 		if (is_file($conffile) == True) {
- 			$file = @fopen($conffile, "r");
- 			if (!$file) return false; // abort if file is not readable
-@@ -1071,7 +1075,7 @@
- 	* Saves preferences to config file config.cfg
- 	*/
- 	public function save() {
--		$conffile = substr(__FILE__, 0, strlen(__FILE__) - 15) . "/config/config.cfg";
-+		$conffile = "/etc/webapps/ldap-account-manager/config.cfg";
- 		if (is_file($conffile) == True) {
- 			$file = fopen($conffile, "r");
- 			$file_array = array();
+ 	function __construct() {
+-		$this->conffile = substr(__FILE__, 0, strlen(__FILE__) - 15) . "/config/config.cfg";
++		$this->conffile = "/etc/webapps/ldap-account-manager/config.cfg";
+ 		// set default values
+ 		$this->sessionTimeout = 30;
+ 		$this->logLevel = LOG_NOTICE;
 --- ldap-account-manager-2.8.0/lib/account.inc~	2009-10-28 18:35:23.000000000 +0200
 +++ ldap-account-manager-2.8.0/lib/account.inc	2009-11-02 14:14:11.593795230 +0200
 @@ -40,8 +40,8 @@
