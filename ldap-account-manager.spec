@@ -134,13 +134,13 @@ mv config/*_sample .
 
 find -name .htaccess | xargs rm
 
-rm COPYING Makefile.in configure install.sh docs/README.fpdf.htm
+rm COPYING Makefile.in configure install.sh
 
 rm locale/*/LC_MESSAGES/*.po
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT{%{_sysconfdir},%{_appdir},%{_phpdocdir}}
+install -d $RPM_BUILD_ROOT{%{_sysconfdir},%{_appdir},%{_phpdocdir}/%{name}}
 
 cp -a . $RPM_BUILD_ROOT%{_appdir}
 
@@ -151,10 +151,11 @@ cp -a %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/httpd.conf
 cp -a %{SOURCE2} $RPM_BUILD_ROOT%{_sysconfdir}/lighttpd.conf
 
 # apidocs
-mv $RPM_BUILD_ROOT{%{_appdir}/docs/devel,%{_phpdocdir}/%{name}}
+mv $RPM_BUILD_ROOT{%{_appdir}/docs/devel,%{_phpdocdir}/%{name}/devel}
+mv $RPM_BUILD_ROOT{%{_appdir}/docs/manual,%{_phpdocdir}/%{name}/manual}
 
 # in %doc
-rm $RPM_BUILD_ROOT%{_appdir}/{docs/*.txt,HISTORY,INSTALL,README,VERSION,copyright}
+rm $RPM_BUILD_ROOT%{_appdir}/{HISTORY,README,VERSION,copyright}
 
 %triggerin -- apache1 < 1.3.37-3, apache1-base
 %webapp_register apache %{_webapp}
@@ -179,7 +180,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc docs/*.txt HISTORY INSTALL README VERSION copyright
+%doc HISTORY README VERSION copyright
 %dir %attr(750,root,http) %{_sysconfdir}
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/apache.conf
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/httpd.conf
