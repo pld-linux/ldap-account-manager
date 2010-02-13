@@ -16,6 +16,8 @@ Source2:	lighttpd.conf
 URL:		http://lam.sourceforge.net/
 Patch0:		configdir.patch
 Patch1:		loginbysearch.patch
+BuildRequires:	perl-base
+BuildRequires:	rpm-perlprov
 BuildRequires:	rpmbuild(macros) >= 1.268
 Requires:	perl-base
 Requires:	php-common >= 4:5.0
