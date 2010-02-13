@@ -140,9 +140,13 @@ rm locale/*/LC_MESSAGES/*.po
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT{%{_sysconfdir},%{_appdir},%{_phpdocdir}/%{name}}
+install -d $RPM_BUILD_ROOT{%{_sysconfdir},%{_appdir},%{_phpdocdir}/%{name}} \
+	$RPM_BUILD_ROOT{/var/lib/%{name}/{sess,tmp},%{_sbindir}}
 
 cp -a . $RPM_BUILD_ROOT%{_appdir}
+
+# daemon
+mv $RPM_BUILD_ROOT%{_appdir}/lib/lamdaemon.pl $RPM_BUILD_ROOT%{_sbindir}
 
 # config
 mv $RPM_BUILD_ROOT{%{_appdir}/config/*,%{_sysconfdir}}
@@ -156,6 +160,10 @@ mv $RPM_BUILD_ROOT{%{_appdir}/docs/manual,%{_phpdocdir}/%{name}/manual}
 
 # in %doc
 rm $RPM_BUILD_ROOT%{_appdir}/{HISTORY,README,VERSION,copyright}
+
+rm -rf $RPM_BUILD_ROOT%{_appdir}/{sess,tmp}
+ln -s /var/lib/%{name}/sess $RPM_BUILD_ROOT%{_appdir}/sess
+ln -s /var/lib/%{name}/tmp $RPM_BUILD_ROOT%{_appdir}/tmp
 
 %triggerin -- apache1 < 1.3.37-3, apache1-base
 %webapp_register apache %{_webapp}
@@ -225,16 +233,15 @@ rm -rf $RPM_BUILD_ROOT
 %lang(zh_CN) %{_appdir}/locale/zh_CN
 %lang(zh_TW) %{_appdir}/locale/zh_TW
 
-# XXX: move out of lam topdir
-%exclude %{_appdir}/lib/lamdaemon.pl
-
-# XXX: use /var
-%dir %attr(740,http,http) %{_appdir}/sess
-%dir %attr(740,http,http) %{_appdir}/tmp
+# symlinks to /var/lib/...
+%{_appdir}/sess
+%{_appdir}/tmp
+%dir %attr(740,http,http) /var/lib/%{name}/sess
+%dir %attr(740,http,http) /var/lib/%{name}/tmp
 
 %files lamdaemon
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_appdir}/lib/lamdaemon.pl
+%attr(755,root,root) %{_sbindir}/lamdaemon.pl
 
 %files phpdoc
 %defattr(644,root,root,755)
