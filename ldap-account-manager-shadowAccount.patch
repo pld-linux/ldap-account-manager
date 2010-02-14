@@ -1,0 +1,85 @@
+--- ldap-account-manager-2.9.0/lib/modules/shadowAccount.inc,orig	2009-11-24 12:39:41.000000000 +0100
++++ ldap-account-manager-2.9.0/lib/modules/shadowAccount.inc	2010-02-14 11:03:35.017971910 +0100
+@@ -130,11 +130,11 @@
+ 		// profile checks
+ 		$return['profile_checks']['shadowAccount_shadowMin'] = array(
+ 			'type' => 'ext_preg',
+-			'regex' => 'digit',
++			'regex' => 'digit2',
+ 			'error_message' => $this->messages['shadowMin'][0]);
+ 		$return['profile_checks']['shadowAccount_shadowMax'] = array(
+ 			'type' => 'ext_preg',
+-			'regex' => 'digit',
++			'regex' => 'digit2',
+ 			'error_message' => $this->messages['shadowMax'][0]);
+ 		$return['profile_checks']['shadowAccount_cmp'] = array(
+ 			'type' => 'int_greater',
+@@ -147,7 +147,7 @@
+ 			'error_message' => $this->messages['inactive'][0]);
+ 		$return['profile_checks']['shadowAccount_shadowWarning'] = array(
+ 			'type' => 'ext_preg',
+-			'regex' => 'digit',
++			'regex' => 'digit2',
+ 			'error_message' => $this->messages['shadowWarning'][0]);
+ 		// profile mappings
+ 		$return['profile_mappings'] = array(
+@@ -256,11 +256,11 @@
+ 		$this->attributes['shadowMax'][0] = $_POST['shadowMax'];
+ 		$this->attributes['shadowWarning'][0] = $_POST['shadowWarning'];
+ 		$this->attributes['shadowInactive'][0] = $_POST['shadowInactive'];
+-		if ( !get_preg($this->attributes['shadowMin'][0], 'digit'))  $errors[] = $this->messages['shadowMin'][0];
+-		if ( !get_preg($this->attributes['shadowMax'][0], 'digit')) $errors[] = $this->messages['shadowMax'][0];
++		if ( !get_preg($this->attributes['shadowMin'][0], 'digit2'))  $errors[] = $this->messages['shadowMin'][0];
++		if ( !get_preg($this->attributes['shadowMax'][0], 'digit2')) $errors[] = $this->messages['shadowMax'][0];
+ 		if ( $this->attributes['shadowMin'][0] > $this->attributes['shadowMax'][0]) $errors[] = $this->messages['shadow_cmp'][0];
+ 		if ( !get_preg($this->attributes['shadowInactive'][0], 'digit2')) $errors[] = $this->messages['inactive'][0];
+-		if ( !get_preg($this->attributes['shadowWarning'][0], 'digit')) $errors[] = $this->messages['shadowWarning'][0];
++		if ( !get_preg($this->attributes['shadowWarning'][0], 'digit2')) $errors[] = $this->messages['shadowWarning'][0];
+ 		return $errors;
+ 	}
+ 
+@@ -303,7 +303,7 @@
+ 				array('kind' => 'help', 'value' => 'shadowMax'));
+ 	
+ 			$expirationDate = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+-			if (isset($this->attributes['shadowExpire'][0])) {
++			if (isset($this->attributes['shadowExpire'][0]) && ($this->attributes['shadowExpire'][0] != -1)) {
+ 				$shAccExpirationDate = $this->attributes['shadowExpire'][0];
+ 				$date = getdate($shAccExpirationDate*3600*24);
+ 				$expirationDate = $date['mday'] . "." . $date['mon'] . "." . $date['year'];
+@@ -353,7 +353,7 @@
+ 	function display_html_expire() {
+ 		$return = array();
+ 		$shAccExpirationDate = 0;
+-		if (isset($this->attributes['shadowExpire'][0])) {
++		if (isset($this->attributes['shadowExpire'][0]) && ($this->attributes['shadowExpire'][0] != -1)) {
+ 			$shAccExpirationDate = $this->attributes['shadowExpire'][0];
+ 		}
+ 		$date = getdate($shAccExpirationDate*3600*24);
+@@ -409,7 +409,7 @@
+ 			$partialAccounts[$i]['shadowLastChange'] = array(intval(time()/3600/24));
+ 			// password warning
+ 			if ($rawAccounts[$i][$ids['shadowAccount_warning']] != '') {
+-				if (get_preg($rawAccounts[$i][$ids['shadowAccount_warning']], 'digit')) {
++				if (get_preg($rawAccounts[$i][$ids['shadowAccount_warning']], 'digit2')) {
+ 					$partialAccounts[$i]['shadowWarning'][] = $rawAccounts[$i][$ids['shadowAccount_warning']];
+ 				}
+ 				else {
+@@ -431,7 +431,7 @@
+ 			}
+ 			// password minAge
+ 			if ($rawAccounts[$i][$ids['shadowAccount_minAge']] != '') {
+-				if (get_preg($rawAccounts[$i][$ids['shadowAccount_minAge']], 'digit')) {
++				if (get_preg($rawAccounts[$i][$ids['shadowAccount_minAge']], 'digit2')) {
+ 					$partialAccounts[$i]['shadowMin'][] = $rawAccounts[$i][$ids['shadowAccount_minAge']];
+ 				}
+ 				else {
+@@ -442,7 +442,7 @@
+ 			}
+ 			// password maxAge
+ 			if ($rawAccounts[$i][$ids['shadowAccount_maxAge']] != '') {
+-				if (get_preg($rawAccounts[$i][$ids['shadowAccount_maxAge']], 'digit')) {
++				if (get_preg($rawAccounts[$i][$ids['shadowAccount_maxAge']], 'digit2')) {
+ 					$partialAccounts[$i]['shadowMax'][] = $rawAccounts[$i][$ids['shadowAccount_maxAge']];
+ 				}
+ 				else {
