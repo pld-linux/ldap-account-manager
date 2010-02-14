@@ -479,8 +479,8 @@ diff -ur ldap-account-manager-2.9.0/templates/config/confmain.php ldap-account-m
 --- ldap-account-manager-2.9.0/templates/config/confmain.php	2010-02-14 12:59:38.543718828 +0100
 +++ ldap-account-manager-2.9.0-limit/templates/config/confmain.php	2010-02-14 12:25:51.312720326 +0100
 @@ -276,6 +276,18 @@
- if ($conf->get_cacheTimeout() != 15) echo("<option>15</option>\n");
- echo ("</select></td>\n");
+ printHelpLink(getHelp('', '214'), '214');
+ echo "</td></tr>\n";
  $tabindex++;
 +
 +// new line
@@ -494,9 +494,9 @@ diff -ur ldap-account-manager-2.9.0/templates/config/confmain.php ldap-account-m
 +printHelpLink(getHelp('', '213'), '213');
 +echo "</td></tr>\n";
 +$tabindex++;
- echo "<td>";
- printHelpLink(getHelp('', '214'), '214');
- echo "</td></tr>\n";
+ 
+ // access level is only visible in Pro version
+ if (isLAMProVersion()) {
 @@ -535,6 +547,9 @@
  	if (!$conf->set_cacheTimeout($_POST['cachetimeout'])) {
  		$errors[] = array("ERROR", _("Cache timeout is invalid!"));
