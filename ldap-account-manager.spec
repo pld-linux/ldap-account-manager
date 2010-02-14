@@ -166,7 +166,7 @@ mv $RPM_BUILD_ROOT{%{_appdir}/docs/devel,%{_phpdocdir}/%{name}/devel}
 mv $RPM_BUILD_ROOT{%{_appdir}/docs/manual,%{_phpdocdir}/%{name}/manual}
 
 # in %doc
-rm $RPM_BUILD_ROOT%{_appdir}/{HISTORY,README,VERSION,copyright}
+rm $RPM_BUILD_ROOT%{_appdir}/{HISTORY,README,copyright}
 
 rm -rf $RPM_BUILD_ROOT%{_appdir}/{sess,tmp}
 ln -s /var/lib/%{name}/sess $RPM_BUILD_ROOT%{_appdir}/sess
@@ -195,7 +195,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc HISTORY README VERSION copyright
+%doc HISTORY README copyright
 %dir %attr(750,root,http) %{_sysconfdir}
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/apache.conf
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/httpd.conf
@@ -215,6 +215,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(640,root,http) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/selfService/default.*
 
 %dir %{_appdir}
+%{_appdir}/VERSION
 %{_appdir}/*_sample
 %{_appdir}/graphics
 %{_appdir}/help
