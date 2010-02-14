@@ -29,6 +29,7 @@ Requires:	php-iconv
 Requires:	php-ldap
 Requires:	php-pcre
 Requires:	php-session
+Requires:	php-spl
 Requires:	php-xml
 Requires:	webapps
 Requires:	webserver(access)
