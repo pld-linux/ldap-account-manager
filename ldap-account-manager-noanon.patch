@@ -105,7 +105,7 @@ diff -ur ldap-account-manager-2.9.0/templates/config/confmain.php ldap-account-m
 +echo "<tr id=\"trLoginSearchDNPassword\"><td align=\"right\">\n";
 +echo "<b>".
 +	_("Password of DN for LDAP searches") . ": </b></td>".
-+	"<td><input type=\"text\" tabindex=\"$tabindex\" name=\"loginSearchDNPassword\" value=\"" . $conf->getLoginSearchDNPassword() . "\"  size=50></td>\n";
++	"<td><input type=\"password\" tabindex=\"$tabindex\" name=\"loginSearchDNPassword\" value=\"" . $conf->getLoginSearchDNPassword() . "\"  size=50></td>\n";
 +echo "<td>";
 +printHelpLink(getHelp('', '223'), '223');
 +echo "</td></tr>\n";
@@ -134,3 +134,20 @@ diff -ur ldap-account-manager-2.9.0/templates/login.php ldap-account-manager-2.9
  			if (! ($searchLDAPResult == 0)) {
  				$searchSuccess = false;
  				$searchError = _('Cannot connect to specified LDAP server. Please try again.') . ' ' . @ldap_error($searchLDAP->server());
+--- ldap-account-manager-2.9.0-noanon/templates/config/config.js~	2009-10-27 19:46:33.000000000 +0100
++++ ldap-account-manager-2.9.0-noanon/templates/config/config.js	2010-02-15 16:53:50.544684173 +0100
+@@ -34,10 +34,14 @@
+ 		 document.getElementById('trAdminList').style.display = '';
+ 		 document.getElementById('trLoginSearchSuffix').style.display = 'none';
+ 		 document.getElementById('trLoginSearchFilter').style.display = 'none';
++		 document.getElementById('trLoginSearchDN').style.display = 'none';
++		 document.getElementById('trLoginSearchDNPassword').style.display = 'none';
+ 	}
+ 	else {
+ 		 document.getElementById('trAdminList').style.display = 'none';
+ 		 document.getElementById('trLoginSearchSuffix').style.display = '';
+ 		 document.getElementById('trLoginSearchFilter').style.display = '';
++		 document.getElementById('trLoginSearchDN').style.display = '';
++		 document.getElementById('trLoginSearchDNPassword').style.display = '';
+ 	}
+ }
