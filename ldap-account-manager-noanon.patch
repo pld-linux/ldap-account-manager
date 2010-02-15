@@ -59,7 +59,7 @@ diff -ur ldap-account-manager-2.9.0/lib/config.inc ldap-account-manager-2.9.0-no
 +	 * 
 +	 * @return String $loginSearchDN DN
 +	 */
-+	public function setLoginSearchDN() {
++	public function setLoginSearchDN($loginSearchDN) {
 +		$this->loginSearchDN = $loginSearchDN;
 +	}
 +	
@@ -77,7 +77,7 @@ diff -ur ldap-account-manager-2.9.0/lib/config.inc ldap-account-manager-2.9.0-no
 +	 * 
 +	 * @return String $loginSearchDNPassword password
 +	 */
-+	public function setLoginSearchDNPassword() {
++	public function setLoginSearchDNPassword($loginSearchDNPassword) {
 +		$this->loginSearchDNPassword = $loginSearchDNPassword;
 +	}
 +	
