@@ -95,7 +95,7 @@ diff -ur ldap-account-manager-2.9.0/templates/config/confmain.php ldap-account-m
 +// login search DN
 +echo "<tr id=\"trLoginSearchDN\"><td align=\"right\">\n";
 +echo "<b>".
-+	_("DN for LDAP searches") . " *: </b></td>".
++	_("DN for LDAP searches") . ": </b></td>".
 +	"<td><input type=\"text\" tabindex=\"$tabindex\" name=\"loginSearchDN\" value=\"" . $conf->getLoginSearchDN() . "\"  size=50></td>\n";
 +echo "<td>";
 +printHelpLink(getHelp('', '222'), '222');
@@ -104,7 +104,7 @@ diff -ur ldap-account-manager-2.9.0/templates/config/confmain.php ldap-account-m
 +// login search DN password
 +echo "<tr id=\"trLoginSearchDNPassword\"><td align=\"right\">\n";
 +echo "<b>".
-+	_("Password of DN for LDAP searches") . " *: </b></td>".
++	_("Password of DN for LDAP searches") . ": </b></td>".
 +	"<td><input type=\"text\" tabindex=\"$tabindex\" name=\"loginSearchDNPassword\" value=\"" . $conf->getLoginSearchDNPassword() . "\"  size=50></td>\n";
 +echo "<td>";
 +printHelpLink(getHelp('', '223'), '223');
