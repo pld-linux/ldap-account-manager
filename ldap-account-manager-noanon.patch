@@ -1,0 +1,136 @@
+diff -ur ldap-account-manager-2.9.0/help/help.inc ldap-account-manager-2.9.0-noanon/help/help.inc
+--- ldap-account-manager-2.9.0/help/help.inc	2010-02-15 15:17:10.819334352 +0100
++++ ldap-account-manager-2.9.0-noanon/help/help.inc	2010-02-15 15:20:27.559393571 +0100
+@@ -118,6 +118,10 @@
+ 					"Text" => _("The number of users who may login to LAM is restricted. This can be either a fixed list of DNs or LAM can search LDAP to find a DN which matches the given user name.")),
+ 				"221" => array ("Headline" => _("LDAP search"),
+ 					"Text" => _("Please enter the LDAP suffix where LAM should start to search for users. The LDAP filter needs to match the given user name to exactly one DN. The value \"%USER%\" will be replaced by the user name from the login page.")),
++				"222" => array ("Headline" => _("DN for LDAP searches"),
++					"Text" => _("Please enter the DN used for LDAP searches. Leave empty for anonymous bind (default).")),
++				"223" => array ("Headline" => _("Password of DN for LDAP searches"),
++					"Text" => _("Please enter the password of DN used for LDAP searches. Leave empty for anonymous bind (default).")),
+ 				"230" => array ("Headline" => _("Profile management") . " - " . _("Add profile"),
+ 					"Text" => _("Please enter the name of the new profile and the password to change its settings. Profile names may contain letters, numbers and -/_.")),
+ 				"231" => array ("Headline" => _("Profile management") . " - " . _("Rename profile"),
+diff -ur ldap-account-manager-2.9.0/lib/config.inc ldap-account-manager-2.9.0-noanon/lib/config.inc
+--- ldap-account-manager-2.9.0/lib/config.inc	2010-02-15 15:17:10.700465385 +0100
++++ ldap-account-manager-2.9.0-noanon/lib/config.inc	2010-02-15 15:08:06.034277381 +0100
+@@ -245,11 +245,15 @@
+ 	/** search filter for login */
+ 	private $loginSearchFilter = 'uid=%USER%';
+ 
++	/** DN to bind as when doing search for login, leave empty for anonymous bind */
++	private $loginSearchDN = '';
++	private $loginSearchDNpassword = '';
++
+ 	/** List of all settings in config file */
+ 	private $settings = array("ServerURL", "useTLS", "Passwd", "Admins", "treesuffix",
+ 		"defaultLanguage", "scriptPath", "scriptServer", "scriptRights", "cachetimeout", "sizelimit",
+ 		"modules", "activeTypes", "types", "accessLevel", 'loginMethod', 'loginSearchSuffix',
+-		'loginSearchFilter');
++		'loginSearchFilter', 'loginSearchDN', 'loginSearchDNPassword');
+ 
+ 
+ 	/**
+@@ -398,6 +402,8 @@
+ 			if (!in_array("loginMethod", $saved)) array_push($file_array, "\n\n# Login method.\n" . "loginMethod: " . $this->loginMethod . "\n");
+ 			if (!in_array("loginSearchSuffix", $saved)) array_push($file_array, "\n\n# Search suffix for LAM login.\n" . "loginSearchSuffix: " . $this->loginSearchSuffix . "\n");
+ 			if (!in_array("loginSearchFilter", $saved)) array_push($file_array, "\n\n# Search filter for LAM login.\n" . "loginSearchFilter: " . $this->loginSearchFilter . "\n");
++			if (!in_array("loginSearchDN", $saved)) array_push($file_array, "\n\n# DN to bind as when doing search for LAM login.\n" . "loginSearchDN: " . $this->loginSearchDN . "\n");
++			if (!in_array("loginSearchDNPassword", $saved)) array_push($file_array, "\n\n# Pasword for DN to bind as when doing search for LAM login.\n" . "loginSearchDNPassword: " . $this->loginSearchDNPassword . "\n");
+ 			// check if all module settings were added
+ 			$m_settings = array_keys($this->moduleSettings);
+ 			for ($i = 0; $i < sizeof($m_settings); $i++) {
+@@ -1005,6 +1011,43 @@
+ 		$this->loginSearchSuffix = $loginSearchSuffix;
+ 	}
+ 
++	/**
++	 * Returns the DN to bind as when doing search for login.
++	 * 
++	 * @return String DN
++	 */
++	public function getLoginSearchDN() {
++		return $this->loginSearchDN;
++	}
++	
++	/**
++	 * Sets the DN to bind as when doing search for login.
++	 * 
++	 * @return String $loginSearchDN DN
++	 */
++	public function setLoginSearchDN() {
++		$this->loginSearchDN = $loginSearchDN;
++	}
++	
++	/**
++	 * Returns the password of DN to bind as when doing search for login.
++	 * 
++	 * @return String password
++	 */
++	public function getLoginSearchDNPassword() {
++		return $this->loginSearchDNPassword;
++	}
++	
++	/**
++	 * Sets the password of DN to bind as when doing search for login.
++	 * 
++	 * @return String $loginSearchDNPassword password
++	 */
++	public function setLoginSearchDNPassword() {
++		$this->loginSearchDNPassword = $loginSearchDNPassword;
++	}
++	
++
+ }
+ 
+ 
+diff -ur ldap-account-manager-2.9.0/templates/config/confmain.php ldap-account-manager-2.9.0-noanon/templates/config/confmain.php
+--- ldap-account-manager-2.9.0/templates/config/confmain.php	2010-02-15 15:17:10.773272050 +0100
++++ ldap-account-manager-2.9.0-noanon/templates/config/confmain.php	2010-02-15 15:16:41.912272764 +0100
+@@ -494,6 +494,24 @@
+ printHelpLink(getHelp('', '221'), '221');
+ echo "</td></tr>\n";
+ $tabindex++;
++// login search DN
++echo "<tr id=\"trLoginSearchDN\"><td align=\"right\">\n";
++echo "<b>".
++	_("DN for LDAP searches") . " *: </b></td>".
++	"<td><input type=\"text\" tabindex=\"$tabindex\" name=\"loginSearchDN\" value=\"" . $conf->getLoginSearchDN() . "\"  size=50></td>\n";
++echo "<td>";
++printHelpLink(getHelp('', '222'), '222');
++echo "</td></tr>\n";
++$tabindex++;
++// login search DN password
++echo "<tr id=\"trLoginSearchDNPassword\"><td align=\"right\">\n";
++echo "<b>".
++	_("Password of DN for LDAP searches") . " *: </b></td>".
++	"<td><input type=\"text\" tabindex=\"$tabindex\" name=\"loginSearchDNPassword\" value=\"" . $conf->getLoginSearchDNPassword() . "\"  size=50></td>\n";
++echo "<td>";
++printHelpLink(getHelp('', '223'), '223');
++echo "</td></tr>\n";
++$tabindex++;
+ 
+ echo ("<tr><td colspan=3>&nbsp;</td></tr>\n");
+ 
+@@ -563,6 +581,8 @@
+ 	$conf->setLoginMethod($_POST['loginMethod']);
+ 	$conf->setLoginSearchFilter($_POST['loginSearchFilter']);
+ 	$conf->setLoginSearchSuffix($_POST['loginSearchSuffix']);
++	$conf->setLoginSearchDN($_POST['loginSearchDN']);
++	$conf->setLoginSearchDNPassword($_POST['loginSearchDNPassword']);
+ 	if (!$conf->set_Adminstring(implode(";", $adminTextNew))) {
+ 		$errors[] = array("ERROR", _("List of admin users is empty or invalid!"));
+ 	}
+diff -ur ldap-account-manager-2.9.0/templates/login.php ldap-account-manager-2.9.0-noanon/templates/login.php
+--- ldap-account-manager-2.9.0/templates/login.php	2010-02-15 15:17:10.786334238 +0100
++++ ldap-account-manager-2.9.0-noanon/templates/login.php	2010-02-15 15:12:23.418271975 +0100
+@@ -436,7 +436,7 @@
+ 			$searchSuccess = true;
+ 			$searchError = '';
+ 			$searchLDAP = new Ldap($_SESSION['config']);
+-			$searchLDAPResult = $searchLDAP->connect('', '', true);
++			$searchLDAPResult = $searchLDAP->connect($_SESSION['config']->getLoginSearchDN(), $_SESSION['config']->getLoginSearchDNPassword(), true);
+ 			if (! ($searchLDAPResult == 0)) {
+ 				$searchSuccess = false;
+ 				$searchError = _('Cannot connect to specified LDAP server. Please try again.') . ' ' . @ldap_error($searchLDAP->server());
