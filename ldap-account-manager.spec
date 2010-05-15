@@ -5,12 +5,12 @@ Summary:	Administration of LDAP users, groups and hosts via Web GUI
 Summary(de.UTF-8):	Administration von Benutzern, Gruppen und Hosts für LDAP-Server
 Summary(pl.UTF-8):	LDAP Account Manager (LAM) - interfejs WWW do zarządzania kontami na serwerze LDAP
 Name:		ldap-account-manager
-Version:	2.9.0
-Release:	0.3
+Version:	3.0.0
+Release:	0.1
 License:	GPL v2+
 Group:		Applications/WWW
 Source0:	http://dl.sourceforge.net/lam/%{name}-%{version}.tar.gz
-# Source0-md5:	1f9f1748b3b3d989e93c1fb9127795df
+# Source0-md5:	e67ffe187bd02f1ddb3ad6d2e441c61b
 Source1:	apache.conf
 Source2:	lighttpd.conf
 URL:		http://lam.sourceforge.net/
