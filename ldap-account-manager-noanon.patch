@@ -37,7 +37,7 @@ diff -ur ldap-account-manager-2.9.0/lib/config.inc ldap-account-manager-2.9.0-no
  			if (!in_array("loginSearchSuffix", $saved)) array_push($file_array, "\n\n# Search suffix for LAM login.\n" . "loginSearchSuffix: " . $this->loginSearchSuffix . "\n");
  			if (!in_array("loginSearchFilter", $saved)) array_push($file_array, "\n\n# Search filter for LAM login.\n" . "loginSearchFilter: " . $this->loginSearchFilter . "\n");
 +			if (!in_array("loginSearchDN", $saved)) array_push($file_array, "\n\n# DN to bind as when doing search for LAM login.\n" . "loginSearchDN: " . $this->loginSearchDN . "\n");
-+			if (!in_array("loginSearchDNPassword", $saved)) array_push($file_array, "\n\n# Pasword for DN to bind as when doing search for LAM login.\n" . "loginSearchDNPassword: " . $this->loginSearchDNPassword . "\n");
++			if (!in_array("loginSearchDNPassword", $saved)) array_push($file_array, "\n\n# Password for DN to bind as when doing search for LAM login.\n" . "loginSearchDNPassword: " . $this->loginSearchDNPassword . "\n");
  			// check if all module settings were added
  			$m_settings = array_keys($this->moduleSettings);
  			for ($i = 0; $i < sizeof($m_settings); $i++) {
