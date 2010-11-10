@@ -7,7 +7,7 @@ Summary(de.UTF-8):	Administration von Benutzern, Gruppen und Hosts für LDAP-Ser
 Summary(pl.UTF-8):	LDAP Account Manager (LAM) - interfejs WWW do zarządzania kontami na serwerze LDAP
 Name:		ldap-account-manager
 Version:	2.9.0
-Release:	0.7
+Release:	0.11
 License:	GPL v2+
 Group:		Applications/WWW
 Source0:	http://dl.sourceforge.net/lam/%{name}-%{version}.tar.gz
@@ -260,11 +260,12 @@ rm -rf $RPM_BUILD_ROOT
 %lang(zh_CN) %{_appdir}/locale/zh_CN
 %lang(zh_TW) %{_appdir}/locale/zh_TW
 
+%dir %dir %attr(750,root,http) /var/lib/%{name}
+%dir %attr(770,root,http) /var/lib/%{name}/sess
+%dir %attr(770,root,http) /var/lib/%{name}/tmp
 # symlinks to /var/lib/...
 %{_appdir}/sess
 %{_appdir}/tmp
-%dir %attr(740,http,http) /var/lib/%{name}/sess
-%dir %attr(740,http,http) /var/lib/%{name}/tmp
 
 %files lamdaemon
 %defattr(644,root,root,755)
