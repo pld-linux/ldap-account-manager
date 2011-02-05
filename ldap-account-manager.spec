@@ -1,24 +1,22 @@
 # TODO
 # - ldap schema package: docs/schema/dhcp.schema
-# - update to 3.0.0
 %include	/usr/lib/rpm/macros.perl
 Summary:	Administration of LDAP users, groups and hosts via Web GUI
 Summary(de.UTF-8):	Administration von Benutzern, Gruppen und Hosts für LDAP-Server
 Summary(pl.UTF-8):	LDAP Account Manager (LAM) - interfejs WWW do zarządzania kontami na serwerze LDAP
 Name:		ldap-account-manager
-Version:	2.9.0
-Release:	1
+Version:	3.2.0
+Release:	0.1
 License:	GPL v2+
 Group:		Applications/WWW
 Source0:	http://dl.sourceforge.net/lam/%{name}-%{version}.tar.gz
-# Source0-md5:	1f9f1748b3b3d989e93c1fb9127795df
+# Source0-md5:	2e447e81fccb9c35aa0fdee29ce9081d
 Source1:	apache.conf
 Source2:	lighttpd.conf
 URL:		http://lam.sourceforge.net/
 Patch0:		configdir.patch
 Patch1:		loginbysearch.patch
 Patch2:		%{name}-shadowAccount.patch
-Patch3:		%{name}-sizelimit.patch
 Patch4:		%{name}-noanon.patch
 BuildRequires:	perl-base
 BuildRequires:	rpm-perlprov
@@ -135,7 +133,6 @@ Dokumentacja do LDAP Account Manager.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
-%patch3 -p1
 %patch4 -p1
 
 cp -a config/config.cfg{_sample,}
@@ -168,8 +165,8 @@ cp -a %{SOURCE2} $RPM_BUILD_ROOT%{_sysconfdir}/lighttpd.conf
 mv $RPM_BUILD_ROOT{%{_appdir}/docs/devel,%{_phpdocdir}/%{name}/devel}
 mv $RPM_BUILD_ROOT{%{_appdir}/docs/manual,%{_phpdocdir}/%{name}/manual}
 
-# in %doc
-rm $RPM_BUILD_ROOT%{_appdir}/{HISTORY,README,copyright}
+# in %doc, or otherwise unneeded
+rm $RPM_BUILD_ROOT%{_appdir}/{HISTORY,README,copyright,configure.ac}
 
 rm -rf $RPM_BUILD_ROOT%{_appdir}/{sess,tmp}
 ln -s /var/lib/%{name}/sess $RPM_BUILD_ROOT%{_appdir}/sess

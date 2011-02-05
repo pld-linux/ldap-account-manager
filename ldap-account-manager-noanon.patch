@@ -1,46 +1,48 @@
-diff -ur ldap-account-manager-2.9.0/help/help.inc ldap-account-manager-2.9.0-noanon/help/help.inc
---- ldap-account-manager-2.9.0/help/help.inc	2010-02-15 15:17:10.819334352 +0100
-+++ ldap-account-manager-2.9.0-noanon/help/help.inc	2010-02-15 15:20:27.559393571 +0100
-@@ -118,6 +118,10 @@
- 					"Text" => _("The number of users who may login to LAM is restricted. This can be either a fixed list of DNs or LAM can search LDAP to find a DN which matches the given user name.")),
- 				"221" => array ("Headline" => _("LDAP search"),
+--- ldap-account-manager-3.2.0/help/help.inc~	2011-02-05 14:06:39.000000000 +0200
++++ ldap-account-manager-3.2.0/help/help.inc	2011-02-05 14:07:51.532944179 +0200
+@@ -115,6 +115,10 @@
  					"Text" => _("Please enter the LDAP suffix where LAM should start to search for users. The LDAP filter needs to match the given user name to exactly one DN. The value \"%USER%\" will be replaced by the user name from the login page.")),
-+				"222" => array ("Headline" => _("DN for LDAP searches"),
+ 				"222" => array ("Headline" => _("LDAP search limit"),
+ 					"Text" => _("Here you can set a limit for LDAP searches. This will restrict the number of results for LDAP searches. Please use this if LAM's LDAP queries produce too much load.")),
++				"223" => array ("Headline" => _("DN for LDAP searches"),
 +					"Text" => _("Please enter the DN used for LDAP searches. Leave empty for anonymous bind (default).")),
-+				"223" => array ("Headline" => _("Password of DN for LDAP searches"),
++				"224" => array ("Headline" => _("Password of DN for LDAP searches"),
 +					"Text" => _("Please enter the password of DN used for LDAP searches. Leave empty for anonymous bind (default).")),
  				"230" => array ("Headline" => _("Profile management") . " - " . _("Add profile"),
  					"Text" => _("Please enter the name of the new profile and the password to change its settings. Profile names may contain letters, numbers and -/_.")),
  				"231" => array ("Headline" => _("Profile management") . " - " . _("Rename profile"),
-diff -ur ldap-account-manager-2.9.0/lib/config.inc ldap-account-manager-2.9.0-noanon/lib/config.inc
---- ldap-account-manager-2.9.0/lib/config.inc	2010-02-15 15:17:10.700465385 +0100
-+++ ldap-account-manager-2.9.0-noanon/lib/config.inc	2010-02-15 15:08:06.034277381 +0100
-@@ -245,11 +245,15 @@
+--- ldap-account-manager-3.2.0/lib/config.inc~	2011-02-05 14:09:11.000000000 +0200
++++ ldap-account-manager-3.2.0/lib/config.inc	2011-02-05 14:11:04.977687197 +0200
+@@ -257,7 +257,11 @@
+ 	
  	/** search filter for login */
  	private $loginSearchFilter = 'uid=%USER%';
- 
+-	
++
 +	/** DN to bind as when doing search for login, leave empty for anonymous bind */
 +	private $loginSearchDN = '';
 +	private $loginSearchDNpassword = '';
 +
- 	/** List of all settings in config file */
+ 	/** email address for sender of password reset mails */
+ 	private $lamProMailFrom = '';
+ 	
+@@ -271,6 +275,7 @@
  	private $settings = array("ServerURL", "useTLS", "Passwd", "Admins", "treesuffix",
- 		"defaultLanguage", "scriptPath", "scriptServer", "scriptRights", "cachetimeout", "sizelimit",
+ 		"defaultLanguage", "scriptPath", "scriptServer", "scriptRights", "cachetimeout",
  		"modules", "activeTypes", "types", "accessLevel", 'loginMethod', 'loginSearchSuffix',
--		'loginSearchFilter');
-+		'loginSearchFilter', 'loginSearchDN', 'loginSearchDNPassword');
++		'loginSearchDN', 'loginSearchDNPassword',
+ 		'loginSearchFilter', 'searchLimit', 'lamProMailFrom', 'lamProMailSubject', 'lamProMailText');
  
  
- 	/**
-@@ -398,6 +402,8 @@
+@@ -420,6 +425,8 @@
  			if (!in_array("loginMethod", $saved)) array_push($file_array, "\n\n# Login method.\n" . "loginMethod: " . $this->loginMethod . "\n");
  			if (!in_array("loginSearchSuffix", $saved)) array_push($file_array, "\n\n# Search suffix for LAM login.\n" . "loginSearchSuffix: " . $this->loginSearchSuffix . "\n");
  			if (!in_array("loginSearchFilter", $saved)) array_push($file_array, "\n\n# Search filter for LAM login.\n" . "loginSearchFilter: " . $this->loginSearchFilter . "\n");
 +			if (!in_array("loginSearchDN", $saved)) array_push($file_array, "\n\n# DN to bind as when doing search for LAM login.\n" . "loginSearchDN: " . $this->loginSearchDN . "\n");
 +			if (!in_array("loginSearchDNPassword", $saved)) array_push($file_array, "\n\n# Password for DN to bind as when doing search for LAM login.\n" . "loginSearchDNPassword: " . $this->loginSearchDNPassword . "\n");
- 			// check if all module settings were added
- 			$m_settings = array_keys($this->moduleSettings);
- 			for ($i = 0; $i < sizeof($m_settings); $i++) {
+ 			if (!in_array("lamProMailFrom", $saved)) array_push($file_array, "\n\n# Password mail from\n" . "lamProMailFrom: " . $this->lamProMailFrom . "\n");
+ 			if (!in_array("lamProMailSubject", $saved)) array_push($file_array, "\n\n# Password mail subject\n" . "lamProMailSubject: " . $this->lamProMailSubject . "\n");
+ 			if (!in_array("lamProMailText", $saved)) array_push($file_array, "\n\n# Password mail text\n" . "lamProMailText: " . $this->lamProMailText . "\n");
 @@ -1005,6 +1011,43 @@
  		$this->loginSearchSuffix = $loginSearchSuffix;
  	}
@@ -98,7 +100,7 @@ diff -ur ldap-account-manager-2.9.0/templates/config/confmain.php ldap-account-m
 +	_("DN for LDAP searches") . ": </b></td>".
 +	"<td><input type=\"text\" tabindex=\"$tabindex\" name=\"loginSearchDN\" value=\"" . $conf->getLoginSearchDN() . "\"  size=50></td>\n";
 +echo "<td>";
-+printHelpLink(getHelp('', '222'), '222');
++printHelpLink(getHelp('', '223'), '223');
 +echo "</td></tr>\n";
 +$tabindex++;
 +// login search DN password
@@ -107,7 +109,7 @@ diff -ur ldap-account-manager-2.9.0/templates/config/confmain.php ldap-account-m
 +	_("Password of DN for LDAP searches") . ": </b></td>".
 +	"<td><input type=\"password\" tabindex=\"$tabindex\" name=\"loginSearchDNPassword\" value=\"" . $conf->getLoginSearchDNPassword() . "\"  size=50></td>\n";
 +echo "<td>";
-+printHelpLink(getHelp('', '223'), '223');
++printHelpLink(getHelp('', '224'), '224');
 +echo "</td></tr>\n";
 +$tabindex++;
  
@@ -134,8 +136,8 @@ diff -ur ldap-account-manager-2.9.0/templates/login.php ldap-account-manager-2.9
  			if (! ($searchLDAPResult == 0)) {
  				$searchSuccess = false;
  				$searchError = _('Cannot connect to specified LDAP server. Please try again.') . ' ' . @ldap_error($searchLDAP->server());
---- ldap-account-manager-2.9.0-noanon/templates/config/config.js~	2009-10-27 19:46:33.000000000 +0100
-+++ ldap-account-manager-2.9.0-noanon/templates/config/config.js	2010-02-15 16:53:50.544684173 +0100
+--- ldap-account-manager-3.2.0/templates/lib/lam.js~	2011-02-05 14:12:35.000000000 +0200
++++ ldap-account-manager-3.2.0/templates/lib/lam.js	2011-02-05 14:12:40.638347688 +0200
 @@ -34,10 +34,14 @@
  		 document.getElementById('trAdminList').style.display = '';
  		 document.getElementById('trLoginSearchSuffix').style.display = 'none';

@@ -1,5 +1,5 @@
---- ldap-account-manager-2.9.0/lib/modules/shadowAccount.inc,orig	2009-11-24 12:39:41.000000000 +0100
-+++ ldap-account-manager-2.9.0/lib/modules/shadowAccount.inc	2010-02-14 11:03:35.017971910 +0100
+--- ldap-account-manager-3.2.0/lib/modules/shadowAccount.inc~	2011-02-05 14:01:54.000000000 +0200
++++ ldap-account-manager-3.2.0/lib/modules/shadowAccount.inc	2011-02-05 14:03:36.115613682 +0200
 @@ -130,11 +130,11 @@
  		// profile checks
  		$return['profile_checks']['shadowAccount_shadowMin'] = array(
@@ -23,7 +23,7 @@
  			'error_message' => $this->messages['shadowWarning'][0]);
  		// profile mappings
  		$return['profile_mappings'] = array(
-@@ -256,11 +256,11 @@
+@@ -275,11 +275,11 @@
  		$this->attributes['shadowMax'][0] = $_POST['shadowMax'];
  		$this->attributes['shadowWarning'][0] = $_POST['shadowWarning'];
  		$this->attributes['shadowInactive'][0] = $_POST['shadowInactive'];
@@ -35,9 +35,9 @@
  		if ( !get_preg($this->attributes['shadowInactive'][0], 'digit2')) $errors[] = $this->messages['inactive'][0];
 -		if ( !get_preg($this->attributes['shadowWarning'][0], 'digit')) $errors[] = $this->messages['shadowWarning'][0];
 +		if ( !get_preg($this->attributes['shadowWarning'][0], 'digit2')) $errors[] = $this->messages['shadowWarning'][0];
- 		return $errors;
- 	}
- 
+ 		if (isset($_POST['form_subpage_shadowAccount_attributes_expirePassword']) && isset($this->attributes['shadowMax'][0]) && ($this->attributes['shadowMax'][0] != 0)) {
+ 			$this->attributes['shadowLastChange'][0] = intval(time()/3600/24) - $this->attributes['shadowMax'][0] - 1;
+ 		}
 @@ -303,7 +303,7 @@
  				array('kind' => 'help', 'value' => 'shadowMax'));
  	
