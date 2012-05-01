@@ -36,15 +36,15 @@
  		// set default values
  		$this->sessionTimeout = 30;
  		$this->logLevel = LOG_NOTICE;
---- ldap-account-manager-3.2.0/lib/account.inc~	2011-02-05 13:52:09.000000000 +0200
-+++ ldap-account-manager-3.2.0/lib/account.inc	2011-02-05 13:52:47.408529134 +0200
-@@ -39,7 +39,7 @@
- * @return array list of shell names
+--- ldap-account-manager-3.7/lib/account.inc~	2012-03-25 20:36:06.000000000 +0300
++++ ldap-account-manager-3.7/lib/account.inc	2012-05-01 21:02:42.263817208 +0300
+@@ -40,7 +40,7 @@
  */
  function getshells() {
+ 	$return = array();
 -	$shellPath = dirname(__FILE__) . '/../config/shells';
 +	$shellPath = '/etc/webapps/ldap-account-manager/shells';
- 	// Load shells from file
+ 	// load shells from file
  	if (file_exists($shellPath)) {
  		$shells = file($shellPath);
 --- ldap-account-manager-2.8.0/lib/selfService.inc~	2009-10-27 20:45:22.000000000 +0200
@@ -76,17 +76,17 @@
  	$file = @fopen($path, "w");
  	if ($file) {
  	  	// write settings to file
---- ldap-account-manager-2.8.0/lib/lamPDF.inc~	2009-10-27 20:45:22.000000000 +0200
-+++ ldap-account-manager-2.8.0/lib/lamPDF.inc	2009-11-02 14:16:14.614959661 +0200
-@@ -87,7 +87,7 @@
+--- ldap-account-manager-3.7/lib/lamPDF.inc~	2012-03-25 20:36:06.000000000 +0300
++++ ldap-account-manager-3.7/lib/lamPDF.inc	2012-05-01 21:03:33.675985875 +0300
+@@ -92,7 +92,7 @@
  	 */
  	function header() {
  		if($this->page_definitions['filename'] != 'none') {
 -			$imageFile = substr(__FILE__,0,strlen(__FILE__)- 14) . "config/pdf/logos/" . $this->page_definitions['filename'];
 +			$imageFile = "/etc/webapps/ldap-account-manager/pdf/logos/" . $this->page_definitions['filename'];
- 			$width = $this->page_definitions['logo-width'];
- 			$height = $this->page_definitions['logo-height'];
- 			if($this->page_definitions['logo-max'] == true) {
+ 			$imgProperties = getimagesize($imageFile);
+ 			$this->Image($imageFile,10,15,($imgProperties[0] / $this->k) / 5, ($imgProperties[1] / $this->k) / 5,0,"JPG");
+ 		}
 --- ldap-account-manager-2.8.0/lib/profiles.inc~	2009-10-27 20:45:22.000000000 +0200
 +++ ldap-account-manager-2.8.0/lib/profiles.inc	2009-11-02 14:17:06.030616922 +0200
 @@ -36,7 +36,7 @@
@@ -185,19 +185,19 @@
  	if(is_file($languagefile) == True)
  	{
  		$file = fopen($languagefile, "r");
---- ldap-account-manager-2.8.0/templates/config/confmain.php~	2009-10-27 20:46:33.000000000 +0200
-+++ ldap-account-manager-2.8.0/templates/config/confmain.php	2009-11-02 14:19:29.863970973 +0200
-@@ -326,7 +326,7 @@
- echo ("<tr>");
- echo ("<td><b>" . _("Default language") . ":</b></td><td>\n");
+--- ldap-account-manager-3.7/templates/config/confmain.php~	2012-03-25 20:36:06.000000000 +0300
++++ ldap-account-manager-3.7/templates/config/confmain.php	2012-05-01 21:04:26.974900799 +0300
+@@ -258,7 +258,7 @@
+ // language
+ $languageSettingsContent = new htmlTable();
  // read available languages
 -$languagefile = "../../config/language";
 +$languagefile = "/etc/webapps/ldap-account-manager/language";
- if(is_file($languagefile))
- {
+ if(is_file($languagefile)) {
  	$file = fopen($languagefile, "r");
---- ldap-account-manager-3.2.0/templates/config/profmanage.php~	2011-02-05 13:56:45.000000000 +0200
-+++ ldap-account-manager-3.2.0/templates/config/profmanage.php	2011-02-05 13:59:05.947667191 +0200
+ 	while(!feof($file)) {
+--- ldap-account-manager-3.7/templates/config/profmanage.php~	2012-05-01 21:01:16.000000000 +0300
++++ ldap-account-manager-3.7/templates/config/profmanage.php	2012-05-01 21:26:08.733146514 +0300
 @@ -103,14 +103,14 @@
  			// check profile password
  			if ($_POST['addpassword'] && $_POST['addpassword2'] && ($_POST['addpassword'] == $_POST['addpassword2'])) {
@@ -218,12 +218,11 @@
  					if ($file) {
  						// load as config and write new password
  						$conf = new LAMConfig($_POST['addprofile']);
-@@ -130,8 +130,8 @@
+@@ -88,7 +88,8 @@
  	// rename profile
  	elseif ($_POST['action'] == "rename") {
- 		if (preg_match("/^[a-z0-9_-]+$/i", $_POST['renfilename']) && !in_array($_POST['renfilename'], getConfigProfiles())) {
--			if (rename("../../config/" . $_POST['oldfilename'] . ".conf",
--				"../../config/" . $_POST['renfilename'] . ".conf")) {
+ 		if (preg_match("/^[a-z0-9_-]+$/i", $_POST['oldfilename']) && preg_match("/^[a-z0-9_-]+$/i", $_POST['renfilename']) && !in_array($_POST['renfilename'], getConfigProfiles())) {
+-			if (rename("../../config/" . $_POST['oldfilename'] . ".conf", "../../config/" . $_POST['renfilename'] . ".conf")) {
 +			if (rename("/etc/webapps/ldap-account-manager/" . $_POST['oldfilename'] . ".conf",
 +				"/etc/webapps/ldap-account-manager/" . $_POST['renfilename'] . ".conf")) {
  				$msg = _("Renamed profile.");

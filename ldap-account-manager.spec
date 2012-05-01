@@ -1,23 +1,24 @@
 # TODO
 # - ldap schema package: docs/schema/dhcp.schema
+# - system fpdf
+# - system seclib
 %include	/usr/lib/rpm/macros.perl
 Summary:	Administration of LDAP users, groups and hosts via Web GUI
 Summary(de.UTF-8):	Administration von Benutzern, Gruppen und Hosts für LDAP-Server
 Summary(pl.UTF-8):	LDAP Account Manager (LAM) - interfejs WWW do zarządzania kontami na serwerze LDAP
 Name:		ldap-account-manager
-Version:	3.2.0
-Release:	0.1
+Version:	3.7
+Release:	1
 License:	GPL v2+
 Group:		Applications/WWW
-Source0:	http://dl.sourceforge.net/lam/%{name}-%{version}.tar.gz
-# Source0-md5:	2e447e81fccb9c35aa0fdee29ce9081d
+Source0:	http://downloads.sourceforge.net/lam/%{name}-%{version}.tar.gz
+# Source0-md5:	75504a4131632a20d5551649f5da4a0e
 Source1:	apache.conf
 Source2:	lighttpd.conf
 URL:		http://lam.sourceforge.net/
 Patch0:		configdir.patch
 Patch1:		loginbysearch.patch
 Patch2:		%{name}-shadowAccount.patch
-Patch4:		%{name}-noanon.patch
 BuildRequires:	perl-base
 BuildRequires:	rpm-perlprov
 BuildRequires:	rpmbuild(macros) >= 1.268
@@ -26,11 +27,13 @@ Requires:	php-common >= 4:5.0
 Requires:	php-gettext
 Requires:	php-hash
 Requires:	php-iconv
+Requires:	php-json
 Requires:	php-ldap
 Requires:	php-pcre
 Requires:	php-session
 Requires:	php-spl
 Requires:	php-xml
+Requires:	php-zip
 Requires:	webapps
 Requires:	webserver(access)
 Requires:	webserver(alias)
@@ -133,10 +136,9 @@ Dokumentacja do LDAP Account Manager.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
-%patch4 -p1
 
-cp -a config/config.cfg{_sample,}
-cp -a config/lam.conf{_sample,}
+cp -p config/config.cfg{_sample,}
+cp -p config/lam.conf{_sample,}
 mv config/*_sample .
 
 find -name .htaccess | xargs rm
@@ -157,9 +159,9 @@ mv $RPM_BUILD_ROOT%{_appdir}/lib/lamdaemon.pl $RPM_BUILD_ROOT%{_sbindir}
 
 # config
 mv $RPM_BUILD_ROOT{%{_appdir}/config/*,%{_sysconfdir}}
-cp -a %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/apache.conf
-cp -a %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/httpd.conf
-cp -a %{SOURCE2} $RPM_BUILD_ROOT%{_sysconfdir}/lighttpd.conf
+cp -p %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/apache.conf
+cp -p %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/httpd.conf
+cp -p %{SOURCE2} $RPM_BUILD_ROOT%{_sysconfdir}/lighttpd.conf
 
 # apidocs
 mv $RPM_BUILD_ROOT{%{_appdir}/docs/devel,%{_phpdocdir}/%{name}/devel}
@@ -218,7 +220,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/lighttpd.conf
 %attr(660,root,http) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/config.cfg
 %attr(660,root,http) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/lam.conf
-%attr(640,root,http) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/passwordMailTemplate.txt
+#%attr(640,root,http) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/passwordMailTemplate.txt
 %attr(640,root,http) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/shells
 %attr(640,root,http) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/language
 %dir %attr(750,root,http) %{_sysconfdir}/pdf
@@ -256,6 +258,7 @@ rm -rf $RPM_BUILD_ROOT
 %lang(ru) %{_appdir}/locale/ru_RU
 %lang(zh_CN) %{_appdir}/locale/zh_CN
 %lang(zh_TW) %{_appdir}/locale/zh_TW
+%lang(sk) %{_appdir}/locale/sk_SK
 
 %dir %dir %attr(750,root,http) /var/lib/%{name}
 %dir %attr(770,root,http) /var/lib/%{name}/sess
