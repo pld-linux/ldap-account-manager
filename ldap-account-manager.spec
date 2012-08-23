@@ -8,7 +8,7 @@ Summary(de.UTF-8):	Administration von Benutzern, Gruppen und Hosts für LDAP-Ser
 Summary(pl.UTF-8):	LDAP Account Manager (LAM) - interfejs WWW do zarządzania kontami na serwerze LDAP
 Name:		ldap-account-manager
 Version:	3.7
-Release:	3
+Release:	4
 License:	GPL v2+
 Group:		Applications/WWW
 Source0:	http://downloads.sourceforge.net/lam/%{name}-%{version}.tar.gz
@@ -23,6 +23,7 @@ BuildRequires:	perl-base
 BuildRequires:	rpm-perlprov
 BuildRequires:	rpmbuild(macros) >= 1.268
 Requires:	perl-base
+Requires:	php(core) >= 5.0
 Requires:	php(gettext)
 Requires:	php(hash)
 Requires:	php(iconv)
@@ -33,7 +34,6 @@ Requires:	php(session)
 Requires:	php(spl)
 Requires:	php(xml)
 Requires:	php(zip)
-Requires:	php-common >= 4:5.0
 Requires:	webapps
 Requires:	webserver(access)
 Requires:	webserver(alias)
