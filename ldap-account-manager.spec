@@ -8,13 +8,14 @@ Summary(de.UTF-8):	Administration von Benutzern, Gruppen und Hosts für LDAP-Ser
 Summary(pl.UTF-8):	LDAP Account Manager (LAM) - interfejs WWW do zarządzania kontami na serwerze LDAP
 Name:		ldap-account-manager
 Version:	3.9
-Release:	2
+Release:	3
 License:	GPL v2+
 Group:		Applications/WWW
 Source0:	http://downloads.sourceforge.net/lam/%{name}-%{version}.tar.gz
 # Source0-md5:	44f33cfd2a900ad9739692a7f4844f51
 Source1:	apache.conf
 Source2:	lighttpd.conf
+Source3:	httpd.conf
 URL:		http://lam.sourceforge.net/
 Patch0:		configdir.patch
 Patch1:		loginbysearch.patch
@@ -39,6 +40,7 @@ Requires:	webserver(access)
 Requires:	webserver(alias)
 Requires:	webserver(indexfile)
 Requires:	webserver(php)
+Conflicts:	apache-base < 2.4.0-1
 BuildArch:	noarch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -160,7 +162,7 @@ mv $RPM_BUILD_ROOT%{_appdir}/lib/lamdaemon.pl $RPM_BUILD_ROOT%{_sbindir}
 # config
 mv $RPM_BUILD_ROOT{%{_appdir}/config/*,%{_sysconfdir}}
 cp -p %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/apache.conf
-cp -p %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/httpd.conf
+cp -p %{SOURCE3} $RPM_BUILD_ROOT%{_sysconfdir}/httpd.conf
 cp -p %{SOURCE2} $RPM_BUILD_ROOT%{_sysconfdir}/lighttpd.conf
 
 # apidocs
@@ -196,10 +198,10 @@ exit 0
 %triggerun -- apache1 < 1.3.37-3, apache1-base
 %webapp_unregister apache %{_webapp}
 
-%triggerin -- apache < 2.2.0, apache-base
+%triggerin -- apache-base
 %webapp_register httpd %{_webapp}
 
-%triggerun -- apache < 2.2.0, apache-base
+%triggerun -- apache-base
 %webapp_unregister httpd %{_webapp}
 
 %triggerin -- lighttpd
