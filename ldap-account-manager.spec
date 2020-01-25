@@ -2,7 +2,6 @@
 # - ldap schema package: docs/schema/dhcp.schema
 # - system fpdf
 # - system seclib
-%include	/usr/lib/rpm/macros.perl
 Summary:	Administration of LDAP users, groups and hosts via Web GUI
 Summary(de.UTF-8):	Administration von Benutzern, Gruppen und Hosts für LDAP-Server
 Summary(pl.UTF-8):	LDAP Account Manager (LAM) - interfejs WWW do zarządzania kontami na serwerze LDAP
